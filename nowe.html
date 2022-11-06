@@ -619,7 +619,7 @@ map.on('load', () => {
     console.log('ready');
     $.ajax({
       type: 'GET',
-      url: CSV,
+      url: config.CSV,
       dataType: 'text',
       success: function (csvData) {
         makeGeoJSON(csvData);
