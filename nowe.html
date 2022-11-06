@@ -201,8 +201,8 @@ const config = {
   ],
 };
 
-mapboxgl.accessToken = config.accessToken;
-const columnHeaders = config.sideBarInfo;
+mapboxgl.accessToken = accessToken;
+const columnHeaders = sideBarInfo;
 
 let geojsonData = {};
 const filteredGeojson = {
@@ -212,9 +212,9 @@ const filteredGeojson = {
 
 const map = new mapboxgl.Map({
   container: 'map',
-  style: config.style,
-  center: config.center,
-  zoom: config.zoom,
+  style: style,
+  center: center,
+  zoom: zoom,
   transformRequest: transformRequest,
 });
 
@@ -231,7 +231,7 @@ function createPopup(currentFeature) {
   if (popups[0]) popups[0].remove();
   new mapboxgl.Popup({ closeOnClick: true })
     .setLngLat(currentFeature.geometry.coordinates)
-    .setHTML('<h3>' + currentFeature.properties[config.popupInfo] + '</h3>')
+    .setHTML('<h3>' + currentFeature.properties[popupInfo] + '</h3>')
     .addTo(map);
 }
 
@@ -560,9 +560,9 @@ function removeFiltersButton() {
   });
 }
 
-createFilterObject(config.filters);
+createFilterObject(filters);
 applyFilters();
-filters(config.filters);
+filters(filters);
 removeFiltersButton();
 
 const geocoder = new MapboxGeocoder({
@@ -619,7 +619,7 @@ map.on('load', () => {
     console.log('ready');
     $.ajax({
       type: 'GET',
-      url: config.CSV,
+      url: CSV,
       dataType: 'text',
       success: function (csvData) {
         makeGeoJSON(csvData);
@@ -701,9 +701,9 @@ exitButton.addEventListener('click', () => {
 });
 
 const title = document.getElementById('title');
-title.innerText = config.title;
+title.innerText = title;
 const description = document.getElementById('description');
-description.innerText = config.description;
+description.innerText = description;
 
 function transformRequest(url) {
   const isMapboxRequest =
