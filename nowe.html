@@ -636,8 +636,8 @@ map.on('load', () => {
     csv2geojson.csv2geojson(
       csvData,
       {
-        latfield: 'x',
-        lonfield: 'y',
+        latfield: 'y',
+        lonfield: 'x',
         delimiter: ';',
       },
       (err, data) => {
