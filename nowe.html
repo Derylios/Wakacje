@@ -212,9 +212,9 @@ const filteredGeojson = {
 
 const map = new mapboxgl.Map({
   container: 'map',
-  style: style,
-  center: center,
-  zoom: zoom,
+  style: config.style,
+  center: config.center,
+  zoom: config.zoom,
   transformRequest: transformRequest,
 });
 
@@ -231,7 +231,7 @@ function createPopup(currentFeature) {
   if (popups[0]) popups[0].remove();
   new mapboxgl.Popup({ closeOnClick: true })
     .setLngLat(currentFeature.geometry.coordinates)
-    .setHTML('<h3>' + currentFeature.properties[popupInfo] + '</h3>')
+    .setHTML('<h3>' + currentFeature.properties[config.popupInfo] + '</h3>')
     .addTo(map);
 }
 
@@ -560,9 +560,9 @@ function removeFiltersButton() {
   });
 }
 
-createFilterObject(filters);
+createFilterObject(config.filters);
 applyFilters();
-filters(filters);
+filters(config.filters);
 removeFiltersButton();
 
 const geocoder = new MapboxGeocoder({
@@ -619,7 +619,7 @@ map.on('load', () => {
     console.log('ready');
     $.ajax({
       type: 'GET',
-      url: CSV,
+      url: config.CSV,
       dataType: 'text',
       success: function (csvData) {
         makeGeoJSON(csvData);
@@ -701,9 +701,9 @@ exitButton.addEventListener('click', () => {
 });
 
 const title = document.getElementById('title');
-title.innerText = title;
+title.innerText = config.title;
 const description = document.getElementById('description');
-description.innerText = description;
+description.innerText = config.description;
 
 function transformRequest(url) {
   const isMapboxRequest =
