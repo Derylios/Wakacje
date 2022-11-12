@@ -1,0 +1,870 @@
+<html>
+
+<head>
+    <title>Nasze wakacje</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <!--biblioteka bootstrapa-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+    <!--bibliioteha jquery-->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" 
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" 
+        crossorigin="anonymous">
+    </script>
+
+<link href='https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.min.css' rel='stylesheet'>
+    <script src='https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.js'></script>
+
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/geojson/0.5.0/geojson.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+    <script src='https://npmcdn.com/csv2geojson@latest/csv2geojson.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+</head>
+<style>
+body { 
+      margin:0; 
+      padding:0; 
+      background-color:black;
+      font-family: 'Helvetica Neue', Helvetica, Arial, Sans-serif; 
+    }	
+    #map { position: absolute; top: 9vh; bottom: 0; width: 100%; };
+.navbar { 
+    margin-top: 0; 
+    width: 100%;
+    min-height: 8vh; 
+  } 
+
+  .navbar-brand {
+    padding: 0 15px;
+    height: 10px;
+    line-height: 10px;
+  }
+
+  /* (80px - button height 34px) / 2 = 23px */
+
+.navbar-toggle {
+  margin-top: 23px;
+  padding: 9px 10px !important;
+}
+
+/*odstep miedzy przyciskami*/
+.btn-space {
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.btn-pop {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.map-overlay {
+position: absolute;
+width: 30vh;
+top: 8vh;
+bottom: 30vh;
+left: 0;
+font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+background-color: #efefef;
+max-height: 100%;
+overflow: hidden;
+display:none;
+}
+ 
+.map-overlay fieldset {
+display: none;
+background: #ddd;
+border: none;
+padding: 10px;
+margin: 0;
+}
+ 
+.map-overlay input {
+display: block;
+border: none;
+width: 100%;
+border-radius: 3px;
+padding: 10px;
+margin: 0;
+box-sizing: border-box;
+}
+ 
+.map-overlay .listing {
+overflow: auto;
+max-height: 100%;
+}
+ 
+.map-overlay .listing > * {
+display: block;
+padding: 5px 10px;
+margin: 0;
+}
+ 
+.map-overlay .listing a {
+border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+color: #404;
+text-decoration: none;
+}
+ 
+.map-overlay .listing a:last-child {
+border: none;
+}
+ 
+.map-overlay .listing a:hover {
+background: #f0f0f0;
+}
+
+/*
+.mapboxgl-popup {
+      max-width: 400px;
+      font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    }
+*/
+
+    h1 {
+      font-size: 20px;
+      line-height: 20px;
+      margin-bottom: 4px;
+    }
+    h2 {
+      font-size: 13px;
+      line-height: 18px;
+      margin-bottom: 2px;
+    }
+    h3 {
+      font-size: 10px;
+      line-height: 14px;
+      margin-bottom: 2px;
+    }
+  
+
+
+  </style>
+<body>
+    <!--  <div class='flex-parent viewport-full relative scroll-hidden'>  -->
+
+      <nav class="navbar navbar-expand-lg bg-light fixed-top">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <!-- Przycisk FOLDERY -->
+              <li role="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                  Foldery
+              </li>
+              <button class= "btn-group-toggle btn btn-secondary active mx-2" id="zasiegbutton" data-toggle="buttons">
+                <input type="checkbox" class="map-overlay" checked autocomplete="off" hidden>Punkty w zasięgu
+              </button>
+            <!--
+            <div id="menu" class="btn-group" role="group" aria-label="Basic radio toggle button group">
+              <input type="radio" class="btn-check" id="ck5cmlmj209541coa3kle30og" name="rtoggle" value="light" checked>
+                <label class="btn btn-outline-primary" for="ck5cmlmj209541coa3kle30og">Satelita Off</label>
+              <input type="radio" class="btn-check" id="cl9pobyha004g14vq0e0nfvxz" name="rtoggle" value="satellite">
+                <label class="btn btn-outline-primary" for="cl9pobyha004g14vq0e0nfvxz">Satelita On</label>
+            </div>
+-->
+            <li id='filterResults' type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#myModal">
+              Filtry
+            </li>
+            </ul>
+            <div id="geocoder" class="geocoder my-2 my-sm-0"></div>
+          </div>
+        </div>
+      </nav>
+        
+        <div id="map">
+
+        </div>
+
+   <!-- </div>  -->
+  
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel"><b>Filtry</b></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class='px24 py24 modal-dialog-scrollable'>
+              <form id="filters"></form>
+              <div class='align-center py12'></div>
+              <div class="flex-parent flex-parent--center-main">
+                  <button id="removeFilters" class="btn">Wyczyść filtry</button>
+              </div>
+  
+          </div>
+                  
+          </div>
+        </div>
+      </div>
+
+      <div class="map-overlay">
+        <fieldset>
+          <input
+            id="feature-filter"
+            type="text"
+            placeholder="szukaj"
+          />
+        </fieldset>
+        <div id="feature-listing" class="listing"></div>
+      </div>
+
+
+      <!-- Funkcja przycisku FOLDERY -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">WYCIECZKI</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <!--zawartosc modulu-->
+          <div class="modal-body container-fluid">
+              <a href="https://drive.google.com/drive/folders/1GtXJm-YMQoxz4gyahkLVHWqXruV6k2wo?usp=share_link" target="_blank" role="button" class="btn btn-primary col-3 btn-space" title="Link" >SOLINA 2021</a>
+              <a href="https://drive.google.com/drive/folders/1Ls2l537kuM0YDWEtVWJFvSkZZaMRjnBy?usp=share_link" target="_blank" role="button" class="btn btn-primary col-3 btn-space" title="Link" >KRAKÓW 2021</a>
+              <a href="https://drive.google.com/drive/folders/1uDvI4Vwad-sc0F7QLi_FszTIKCSlJIZI?usp=share_link" target="_blank" role="button" class="btn btn-primary col-3 btn-space" title="Link" >WROCŁAW 2021</a>
+              <a href="https://drive.google.com/drive/folders/1o3Jke4wTcLEio-fToR34gI9rMWF-Ofi4?usp=share_link" target="_blank" role="button" class="btn btn-primary col-3 btn-space" title="Link" >PRAGA 2022</a>
+              <a href="https://drive.google.com/drive/folders/1YXGrV_AYRWjgHChzJayGj1WIaJfx8JCg?usp=share_link" target="_blank" role="button" class="btn btn-primary col-3 btn-space" title="Link" >KRETA 2022</a>
+              <!--<hr>  linia oddzielajaca-->
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+
+<script>
+//Przycisk uruchamiajacy panel z lista obektow w zasiegu widoku mapy
+$(document).ready(function(){
+    $("#zasiegbutton").click(function(){
+    $(".map-overlay").slideToggle("slow");
+    });
+  });
+  
+
+/* global config csv2geojson turf Assembly $ */
+// eslint-disable-next-line no-unused-vars
+mapboxgl.accessToken = 'pk.eyJ1Ijoia3J6eXphayIsImEiOiJjam5jdmdzbWIyM3hyM3ZtbGIyZnV3aWYwIn0.AFENpSzlRwtosUI1efT5ow';
+    const map = new mapboxgl.Map({
+    container: 'map', // container ID
+    // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+    style: 'mapbox://styles/krzyzak/ck5cmlmj209541coa3kle30og', // style URL
+    center: [26.130,50.306], // starting position [lng, lat]
+    zoom: 4, // starting zoom
+    projection: 'globe' // display the map as a 3D globe
+    });
+
+const config = {
+  
+  CSV:'./wycieczki.csv',
+  //'https://derylios.github.io/Wakacje/wycieczki.csv'
+  
+  
+  //popupInfo: ['adres'],
+  filters: [
+    {
+      type: 'dropdown',
+      title: 'Rok: ',
+      columnHeader: 'rok',
+      listItems: [
+        '2021',
+        '2022',
+      ],
+    },
+
+    {
+      type: 'checkbox',
+      title: 'Wycieczki: ',
+      columnHeader: 'nazwa', // nazwa kolumny w CSV
+      listItems: ['Solina', 'Wrocław', 'Kraków', 'Praga', 'Kreta'], // Case sensitive - must match spreadsheet entry; This will take up to six inputs but is best used with a maximum of three;
+    },
+  ],
+  
+};
+
+/*
+ //zmiana mapy
+ const layerList = document.getElementById('menu');
+        const inputs = layerList.getElementsByTagName('input');
+ 
+        for (const input of inputs) {
+        input.onclick = (layer) => {
+        const layerId = layer.target.id;
+        map.setStyle('mapbox://styles/krzyzak/' + layerId);
+        };
+        }
+
+let geojsonData = {};
+const filteredGeojson = {
+  type: 'FeatureCollection',
+  features: [],
+};
+
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: config.style,
+  center: config.center,
+  zoom: config.zoom,
+  transformRequest: transformRequest,
+});
+*/
+function flyToLocation(currentFeature) {
+  map.flyTo({
+    center: currentFeature,
+    zoom: 8,
+  });
+}
+
+// Holds visible airport features for filtering
+let wycieczki = [];
+ 
+// Create a popup, but don't add it to the map yet.
+const popup = new mapboxgl.Popup({
+closeButton: false
+});
+ 
+const filterEl = document.getElementById('feature-filter');
+const listingEl = document.getElementById('feature-listing');
+ 
+function renderListings(features) {
+const empty = document.createElement('p');
+// Clear any existing listings
+listingEl.innerHTML = '';
+if (features.length) {
+for (const feature of features) {
+const itemLink = document.createElement('a');
+const label = `${feature.properties.nazwa} (${feature.properties.data})`;
+itemLink.href = feature.properties.adres2;
+itemLink.target = '_blank';
+itemLink.textContent = label;
+itemLink.addEventListener('mouseover', () => {
+// Highlight corresponding feature on the map
+popup
+.setLngLat(feature.geometry.coordinates)
+.setText(label)
+.addTo(map);
+});
+listingEl.appendChild(itemLink);
+}
+ 
+// Show the filter input
+filterEl.parentNode.style.display = 'block';
+} else if (features.length === 0 && filterEl.value !== '') {
+empty.textContent = 'Nie ma nic';
+listingEl.appendChild(empty);
+} else {
+empty.textContent = 'LALALALALALAL';
+listingEl.appendChild(empty);
+ 
+// Hide the filter input
+filterEl.parentNode.style.display = 'none';
+}
+}
+ 
+function normalize(string) {
+return string.trim().toLowerCase();
+}
+ 
+// Because features come from tiled vector data,
+// feature geometries may be split
+// or duplicated across tile boundaries.
+// As a result, features may appear
+// multiple times in query results.
+function getUniqueFeatures(features, comparatorProperty) {
+const uniqueIds = new Set();
+const uniqueFeatures = [];
+for (const feature of features) {
+const id = feature.properties[comparatorProperty];
+if (!uniqueIds.has(id)) {
+uniqueIds.add(id);
+uniqueFeatures.push(feature);
+}
+}
+return uniqueFeatures;
+}
+
+
+// Build dropdown list function
+// title - the name or 'category' of the selection e.g. 'Languages: '
+// defaultValue - the default option for the dropdown list
+// listItems - the array of filter items
+
+function buildDropDownList(title, listItems) {
+  const filtersDiv = document.getElementById('filters');
+  const mainDiv = document.createElement('div');
+  const filterTitle = document.createElement('h3');
+  filterTitle.innerText = title;
+  filterTitle.classList.add('py12', 'txt-bold');
+  mainDiv.appendChild(filterTitle);
+
+  const selectContainer = document.createElement('div');
+  selectContainer.classList.add('select-container', 'center');
+
+  const dropDown = document.createElement('select');
+  dropDown.classList.add('select', 'filter-option');
+
+  const selectArrow = document.createElement('div');
+  selectArrow.classList.add('select-arrow');
+
+  const firstOption = document.createElement('option');
+
+  dropDown.appendChild(firstOption);
+  selectContainer.appendChild(dropDown);
+  selectContainer.appendChild(selectArrow);
+  mainDiv.appendChild(selectContainer);
+
+  for (let i = 0; i < listItems.length; i++) {
+    const opt = listItems[i];
+    const el1 = document.createElement('option');
+    el1.textContent = opt;
+    el1.value = opt;
+    dropDown.appendChild(el1);
+  }
+  filtersDiv.appendChild(mainDiv);
+}
+
+// Build checkbox function
+// title - the name or 'category' of the selection e.g. 'Languages: '
+// listItems - the array of filter items
+// To DO: Clean up code - for every third checkbox, create a div and append new checkboxes to it
+
+function buildCheckbox(title, listItems) {
+  const filtersDiv = document.getElementById('filters');
+  const mainDiv = document.createElement('div');
+  const filterTitle = document.createElement('div');
+  const formatcontainer = document.createElement('div');
+  filterTitle.classList.add('center', 'flex-parent', 'py12', 'txt-bold');
+  formatcontainer.classList.add(
+    'center',
+    'flex-parent',
+    'flex-parent--column',
+    'px3',
+    'flex-parent--space-between-main',
+  );
+  const secondLine = document.createElement('div');
+  secondLine.classList.add(
+    'center',
+    'flex-parent',
+    'py12',
+    'px3',
+    'flex-parent--space-between-main',
+  );
+  filterTitle.innerText = title;
+  mainDiv.appendChild(filterTitle);
+  mainDiv.appendChild(formatcontainer);
+
+  for (let i = 0; i < listItems.length; i++) {
+    const container = document.createElement('label');
+
+    container.classList.add('checkbox-container');
+
+    const input = document.createElement('input');
+    input.classList.add('px12', 'filter-option');
+    input.setAttribute('type', 'checkbox');
+    input.setAttribute('id', listItems[i]);
+    input.setAttribute('value', listItems[i]);
+
+    const checkboxDiv = document.createElement('div');
+    const inputValue = document.createElement('p');
+    inputValue.innerText = listItems[i];
+    checkboxDiv.classList.add('checkbox', 'mr6');
+    checkboxDiv.appendChild(Assembly.createIcon('check'));
+
+    container.appendChild(input);
+    container.appendChild(checkboxDiv);
+    container.appendChild(inputValue);
+
+    formatcontainer.appendChild(container);
+  }
+  filtersDiv.appendChild(mainDiv);
+}
+
+const selectFilters = [];
+const checkboxFilters = [];
+
+function createFilterObject(filterSettings) {
+  filterSettings.forEach((filter) => {
+    if (filter.type === 'checkbox') {
+      const keyValues = {};
+      Object.assign(keyValues, {
+        header: filter.columnHeader,
+        value: filter.listItems,
+      });
+      checkboxFilters.push(keyValues);
+    }
+    if (filter.type === 'dropdown') {
+      const keyValues = {};
+      Object.assign(keyValues, {
+        header: filter.columnHeader,
+        value: filter.listItems,
+      });
+      selectFilters.push(keyValues);
+    }
+  });
+}
+
+function applyFilters() {
+  const filterForm = document.getElementById('filters');
+
+  filterForm.addEventListener('change', function () {
+    const filterOptionHTML = this.getElementsByClassName('filter-option');
+    const filterOption = [].slice.call(filterOptionHTML);
+
+    const geojSelectFilters = [];
+    const geojCheckboxFilters = [];
+
+    filteredGeojson.features = [];
+
+    filterOption.forEach((filter) => {
+      if (filter.type === 'checkbox' && filter.checked) {
+        checkboxFilters.forEach((objs) => {
+          Object.entries(objs).forEach(([, value]) => {
+            if (value.includes(filter.value)) {
+              const geojFilter = [objs.header, filter.value];
+              geojCheckboxFilters.push(geojFilter);
+            }
+          });
+        });
+      }
+      if (filter.type === 'select-one' && filter.value) {
+        selectFilters.forEach((objs) => {
+          Object.entries(objs).forEach(([, value]) => {
+            if (value.includes(filter.value)) {
+              const geojFilter = [objs.header, filter.value];
+              geojSelectFilters.push(geojFilter);
+            }
+          });
+        });
+      }
+    });
+
+    if (geojCheckboxFilters.length === 0 && geojSelectFilters.length === 0) {
+      geojsonData.features.forEach((feature) => {
+        filteredGeojson.features.push(feature);
+      });
+    } else if (geojCheckboxFilters.length > 0) {
+      geojCheckboxFilters.forEach((filter) => {
+        geojsonData.features.forEach((feature) => {
+          if (feature.properties[filter[0]].includes(filter[1])) {
+            if (
+              filteredGeojson.features.filter(
+                (f) => f.properties.id === feature.properties.id,
+              ).length === 0
+            ) {
+              filteredGeojson.features.push(feature);
+            }
+          }
+        });
+      });
+      if (geojSelectFilters.length > 0) {
+        const removeIds = [];
+        filteredGeojson.features.forEach((feature) => {
+          let selected = true;
+          geojSelectFilters.forEach((filter) => {
+            if (
+              feature.properties[filter[0]].indexOf(filter[1]) < 0 &&
+              selected === true
+            ) {
+              selected = false;
+              removeIds.push(feature.properties.id);
+            } else if (selected === false) {
+              removeIds.push(feature.properties.id);
+            }
+          });
+        });
+        let uniqueRemoveIds = [...new Set(removeIds)];
+        uniqueRemoveIds.forEach(function (id) {
+          const idx = filteredGeojson.features.findIndex(
+            (f) => f.properties.id === id,
+          );
+          filteredGeojson.features.splice(idx, 1);
+        });
+      }
+    } else {
+      geojsonData.features.forEach((feature) => {
+        let selected = true;
+        geojSelectFilters.forEach((filter) => {
+          if (
+            !feature.properties[filter[0]].includes(filter[1]) &&
+            selected === true
+          ) {
+            selected = false;
+          }
+        });
+        if (
+          selected === true &&
+          filteredGeojson.features.filter(
+            (f) => f.properties.id === feature.properties.id,
+          ).length === 0
+        ) {
+          filteredGeojson.features.push(feature);
+        }
+      });
+    }
+
+    map.getSource('locationData').setData(filteredGeojson);
+  });
+}
+
+function filters(filterSettings) {
+  filterSettings.forEach((filter) => {
+    if (filter.type === 'checkbox') {
+      buildCheckbox(filter.title, filter.listItems);
+    } else if (filter.type === 'dropdown') {
+      buildDropDownList(filter.title, filter.listItems);
+    }
+  });
+}
+
+function removeFilters() {
+  const input = document.getElementsByTagName('input');
+  const select = document.getElementsByTagName('select');
+  const selectOption = [].slice.call(select);
+  const checkboxOption = [].slice.call(input);
+  filteredGeojson.features = [];
+  checkboxOption.forEach((checkbox) => {
+    if (checkbox.type === 'checkbox' && checkbox.checked === true) {
+      checkbox.checked = false;
+    }
+  });
+
+  selectOption.forEach((option) => {
+    option.selectedIndex = 0;
+  });
+
+  map.getSource('locationData').setData(geojsonData);
+  buildLocationList(geojsonData);
+}
+//funkcja przycisku removefilters
+function removeFiltersButton() {
+  const removeFilter = document.getElementById('removeFilters');
+  removeFilter.addEventListener('click', () => {
+    removeFilters();
+  });
+}
+
+createFilterObject(config.filters);
+applyFilters();
+filters(config.filters);
+removeFiltersButton();
+
+
+//dodanie danych z csv csv
+map.on('load', () => {
+  map.setFog({}); // Set the default atmosphere style
+  // csv2geojson - following the Sheet Mapper tutorial https://www.mapbox.com/impact-tools/sheet-mapper
+  console.log('loaded');
+  $(document).ready(() => {
+    console.log('ready');
+    $.ajax({
+      type: 'GET',
+      url: config.CSV,
+      dataType: 'text',
+      success: function (csvData) {
+        makeGeoJSON(csvData);
+      },
+      error: function (request, status, error) {
+        console.log(request);
+        console.log(status);
+        console.log(error);
+      },
+    });
+  });
+
+  function makeGeoJSON(csvData) {
+    csv2geojson.csv2geojson(
+      csvData,
+      {
+        latfield: 'y',
+        lonfield: 'x',
+        delimiter: ';',
+      },
+      (err, data) => {
+        data.features.forEach((data, i) => {
+          data.properties.id = i;
+        });
+
+        geojsonData = data;
+        // Add the the layer to the map
+        map.addLayer({
+          id: 'locationData',
+          type: 'circle',
+          source: {
+            type: 'geojson',
+            data: geojsonData,
+          },
+          paint: {
+            'circle-radius': 5, // size of circles
+            'circle-color': '#3D2E5D', // color of circles
+            'circle-stroke-color': 'white',
+            'circle-stroke-width': 1,
+            'circle-opacity': 0.7,
+          },
+        });
+      },
+    );
+
+  }
+
+
+ 
+map.on('moveend', () => {
+const features = map.queryRenderedFeatures({ layers: ['locationData'] });
+ 
+if (features) {
+const uniqueFeatures = getUniqueFeatures(features, 'id');
+// Populate features for the listing overlay.
+renderListings(uniqueFeatures);
+ 
+// Clear the input container
+filterEl.value = '';
+ 
+// Store the current features in sn `airports` variable to
+// later use for filtering on `keyup`.
+wycieczki = uniqueFeatures;
+}
+});
+ 
+map.on('mousemove', 'locationData', (e) => {
+// Change the cursor style as a UI indicator.
+map.getCanvas().style.cursor = 'pointer';
+ 
+// Populate the popup and set its coordinates based on the feature.
+const feature = e.features[0];
+popup
+.setLngLat(feature.geometry.coordinates)
+.setText(
+`${feature.properties.nazwa} (${feature.properties.rok})`
+)
+.addTo(map);
+});
+ 
+map.on('mouseleave', 'locationData', () => {
+map.getCanvas().style.cursor = '';
+popup.remove();
+});
+ 
+filterEl.addEventListener('keyup', (e) => {
+const value = normalize(e.target.value);
+ 
+// Filter visible features that match the input value.
+const filtered = [];
+for (const feature of wycieczki) {
+const name = normalize(feature.properties.nazwa);
+const code = normalize(feature.properties.rok);
+if (name.includes(value) || code.includes(value)) {
+filtered.push(feature);
+}
+}
+ 
+// Populate the sidebar with filtered results
+renderListings(filtered);
+ 
+// Set the filter to populate features into the layer.
+if (filtered.length) {
+map.setFilter('locationData', [
+'match',
+['get', 'id'],
+filtered.map((feature) => {
+return feature.properties.nazwa;
+}),
+true,
+false
+]);
+}
+});
+ 
+// Call this function on initialization
+// passing an empty array to render an empty state
+renderListings([]);
+});
+
+
+//Popup, wywolaj poprzez klikniecie
+map.on('click', 'locationData', function(e) {
+    var coordinates = e.features[0].geometry.coordinates.slice();
+    var nazwa = e.features[0].properties.nazwa;
+    var godzina = e.features[0].properties.godz;
+    var Rok = e.features[0].properties.rok;
+    var data = e.features[0].properties.data;
+    var przycisk = e.features[0].properties['adres2'];
+    //e.features[0].properties.adres2
+    // upewnienie sie, ze popup wyswietla sie nad zaznaczonym obiektem
+    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+      coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    }
+    
+    new mapboxgl.Popup()
+      .setLngLat(coordinates)
+      .setHTML("<h1><center><strong>"+nazwa+'</strong></center></h1><center><h2><center><strong>'+data+"</strong></center></h2><h3><center><strong>"+godzina+"</strong></center></h3><img src="+e.features[0].properties['adres']+' width=auto height=auto/></center><center><a href="'+przycisk+'" target=_blank role=button class="btn btn-primary btn-pop col-6 mx-auto" title="Wczytaj zdjęcie" >Link</a></center>')
+      .addTo(map);
+      flyToLocation(e.features[0].geometry.coordinates);
+  });
+  
+  // zmiena kursora, kiedy jest nad punktem
+  map.on('mouseenter', 'locationData', function() {
+    map.getCanvas().style.cursor = 'pointer';
+  });
+
+  // przywrocenie kursora do poprzedniej formy, kiedy opuszcza on punkt
+  map.on('mouseleave', 'locationData', function() {
+    map.getCanvas().style.cursor = '';
+  });
+
+  
+
+function transformRequest(url) {
+  const isMapboxRequest =
+    url.slice(8, 22) === 'api.mapbox.com' ||
+    url.slice(10, 26) === 'tiles.mapbox.com';
+  return {
+    url: isMapboxRequest ? url.replace('?', '?pluginName=finder&') : url,
+  };
+}
+
+
+ //skala  
+ var scale = new mapboxgl.ScaleControl({
+          maxWidth: 100,
+          unit: 'imperial'
+        });
+        map.addControl(scale);
+        scale.setUnit('metric');
+
+
+        // Add the control to the map.
+        var geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl
+        });
+        
+        document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+
+        // Add zoom and rotation controls to the map.
+        map.addControl(new mapboxgl.NavigationControl());
+        //Fullscreen
+        map.addControl(new mapboxgl.FullscreenControl());
+
+       
+</script>
+
+
+</html>
