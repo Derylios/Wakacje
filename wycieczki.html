@@ -274,8 +274,8 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoia3J6eXphayIsImEiOiJjam5jdmdzbWIyM3hyM3ZtbGIyZ
 
 const config = {
   
-  CSV:'./wycieczki.csv',
-  //'https://derylios.github.io/Wakacje/wycieczki.csv'
+  CSV:'https://derylios.github.io/Wakacje/wycieczki.csv',//'./wycieczki.csv',
+  //'https://derylios.github.io/Wakacje/wycieczki.csv',
   
   
   //popupInfo: ['adres'],
@@ -294,7 +294,7 @@ const config = {
       type: 'checkbox',
       title: 'Wycieczki: ',
       columnHeader: 'nazwa', // nazwa kolumny w CSV
-      listItems: ['Solina', 'Wroclaw', 'Krakow', 'Praga', 'Kreta'], // Case sensitive - must match spreadsheet entry; This will take up to six inputs but is best used with a maximum of three;
+      listItems: ['Solina', 'Wrocław', 'Kraków', 'Praga', 'Kreta'], // Case sensitive - must match spreadsheet entry; This will take up to six inputs but is best used with a maximum of three;
     },
   ],
   
@@ -311,13 +311,14 @@ const config = {
         map.setStyle('mapbox://styles/krzyzak/' + layerId);
         };
         }
-
+*/
 let geojsonData = {};
 const filteredGeojson = {
   type: 'FeatureCollection',
   features: [],
 };
 
+/*
 const map = new mapboxgl.Map({
   container: 'map',
   style: config.style,
@@ -325,14 +326,14 @@ const map = new mapboxgl.Map({
   zoom: config.zoom,
   transformRequest: transformRequest,
 });
-*/
+
 function flyToLocation(currentFeature) {
   map.flyTo({
     center: currentFeature,
     zoom: 8,
   });
 }
-
+*/
 // Holds visible airport features for filtering
 let wycieczki = [];
  
@@ -710,15 +711,137 @@ map.on('load', () => {
           source: {
             type: 'geojson',
             data: geojsonData,
+            cluster: true,
+            clusterMaxZoom: 40, // Max zoom to cluster points on
+            clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
           },
+          filter: ['has', 'point_count'],
           paint: {
-            'circle-radius': 5, // size of circles
-            'circle-color': '#3D2E5D', // color of circles
-            'circle-stroke-color': 'white',
-            'circle-stroke-width': 1,
-            'circle-opacity': 0.7,
+            'circle-color': [  //'#3D2E5D', // color of circles
+              'step',
+              ['get', 'point_count'],
+              '#51bbd6',
+              5,
+              '#f1f075',
+              10,
+              '#f28cb1'
+              ],
+            'circle-radius': [  //5, // size of circles
+              'step',
+              ['get', 'point_count'],
+              20,
+              5,
+              30,
+              10,
+              40
+            ],
+            //'circle-stroke-color': 'white',
+            //'circle-stroke-width': 1,
+            //'circle-opacity': 0.7,
           },
         });
+
+        map.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'locationData',
+          filter: ['has', 'point_count'],
+          layout: {
+          'text-field': '{point_count_abbreviated}',
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 12
+          }
+        });
+          
+         map.addLayer({
+          id: 'unclustered-point',
+          type: 'circle',
+          source: {
+            type: 'geojson',
+            data: geojsonData,
+            cluster: true,
+            //clusterMaxZoom: 14, // Max zoom to cluster points on
+            //clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
+          },
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+          'circle-color': '#11b4da',
+          'circle-radius': 4,
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#fff'
+          }
+        });
+
+        // inspect a cluster on click
+map.on('click', 'locationData', (e) => {
+const features = map.queryRenderedFeatures(e.point, {
+layers: ['locationData']
+});
+const clusterId = features[0].properties.cluster_id;
+map.getSource('locationData').getClusterExpansionZoom(
+  clusterId,
+(err, zoom) => {
+  if (err) return;
+
+map.easeTo({
+center: features[0].geometry.coordinates,
+zoom: zoom
+});
+}
+);
+});
+ 
+// When a click event occurs on a feature in
+// the unclustered-point layer, open a popup at
+// the location of the feature, with
+// description HTML from its properties.
+
+/*
+map.on('click', 'unclustered-point', (e) => {
+const coordinates = e.features[0].geometry.coordinates.slice();
+const mag = e.features[0].properties.mag;
+const tsunami =
+e.features[0].properties.tsunami === 1 ? 'yes' : 'no';
+*/
+
+map.on('click', 'unclustered-point', (e) => {
+    const coordinates = e.features[0].geometry.coordinates.slice();
+    const nazwa = e.features[0].properties.nazwa;
+    const godzina = e.features[0].properties.godz;
+    const Rok = e.features[0].properties.rok;
+    const data = e.features[0].properties.data;
+    const przycisk = e.features[0].properties['adres2'];
+    //e.features[0].properties.adres2
+    // upewnienie sie, ze popup wyswietla sie nad zaznaczonym obiektem
+    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+      coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    }
+    
+// Ensure that if the map is zoomed out such that
+// multiple copies of the feature are visible, the
+// popup appears over the copy being pointed to.
+while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+};
+ 
+new mapboxgl.Popup()
+      .setLngLat(coordinates)
+      .setHTML("<h1><center><strong>"+nazwa+'</strong></center></h1><center><h2><center><strong>'+data+"</strong></center></h2><h3><center><strong>"+godzina+"</strong></center></h3><img src="+e.features[0].properties['adres']+' width=auto height=auto/></center><center><a href="'+przycisk+'" target=_blank role=button class="btn btn-primary btn-pop col-6 mx-auto" title="Wczytaj zdjęcie" >Link</a></center>')
+      .addTo(map);
+      flyToLocation(e.features[0].geometry.coordinates);
+     
+  });
+ 
+map.on('mouseenter', 'clusters', () => {
+map.getCanvas().style.cursor = 'pointer';
+});
+map.on('mouseleave', 'clusters', () => {
+map.getCanvas().style.cursor = '';
+});
+
+
+
+
       },
     );
 
@@ -727,7 +850,7 @@ map.on('load', () => {
 
  
 map.on('moveend', () => {
-const features = map.queryRenderedFeatures({ layers: ['locationData'] });
+const features = map.queryRenderedFeatures({ layers: ['unclustered-point'] });
  
 if (features) {
 const uniqueFeatures = getUniqueFeatures(features, 'id');
@@ -791,14 +914,8 @@ false
 ]);
 }
 });
- 
-// Call this function on initialization
-// passing an empty array to render an empty state
-renderListings([]);
-});
-
-
-//Popup, wywolaj poprzez klikniecie
+ //Popup, wywolaj poprzez klikniecie
+ /*
 map.on('click', 'locationData', function(e) {
     var coordinates = e.features[0].geometry.coordinates.slice();
     var nazwa = e.features[0].properties.nazwa;
@@ -818,6 +935,14 @@ map.on('click', 'locationData', function(e) {
       .addTo(map);
       flyToLocation(e.features[0].geometry.coordinates);
   });
+  */
+// Call this function on initialization
+// passing an empty array to render an empty state
+renderListings([]);
+});
+
+
+
   
   // zmiena kursora, kiedy jest nad punktem
   map.on('mouseenter', 'locationData', function() {
