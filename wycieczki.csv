@@ -1,4 +1,4 @@
-id;data;godz;rok;y;x;nazwa;adres;adres2
+id;data;godz;rok;latitude;longitude;nazwa;adres;adres2
 1;07.09.2022;10:07:54;2022;39.9197699722222;23.13841;Kreta;https://drive.google.com/uc?export=view&id=1V73ASgkyujlOUekCfpE4QBKzD1t3uUIg;https://drive.google.com/file/d/1V73ASgkyujlOUekCfpE4QBKzD1t3uUIg/view?usp=sharing
 2;07.09.2022;12:43:35;2022;35.5396679722222;24.141905;Kreta;https://drive.google.com/uc?export=view&id=18hjlcIAIvUXNU2RniVI1vbmXOPsgkmEM;https://drive.google.com/file/d/18hjlcIAIvUXNU2RniVI1vbmXOPsgkmEM/view?usp=sharing
 3;07.09.2022;15:54:44;2022;35.451903;24.173615;Kreta;https://drive.google.com/uc?export=view&id=1gqG05ttpMc0angZX6BLgfhn_wBrRXw9D;https://drive.google.com/file/d/1gqG05ttpMc0angZX6BLgfhn_wBrRXw9D/view?usp=sharing
