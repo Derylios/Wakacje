@@ -1,0 +1,1457 @@
+<html>
+
+<head>
+    <title>Wycieczkolot</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <!--dodaje ikone do okna przegladarki (favicon)
+    ewentualnie <link rel="icon" href="https://derylios.github.io/Wakacje/icon.svg"> -->
+    <link rel="apple-touch-icon" sizes="180x180" href="https://derylios.github.io/Wakacje/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://derylios.github.io/Wakacje/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://derylios.github.io/Wakacje/favicon/favicon-16x16.png">
+    <link rel="manifest" href="https://derylios.github.io/Wakacje/favicon/site.webmanifest">
+
+
+
+    <!--biblioteka bootstrapa-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+    <!--bibliioteha jquery-->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" 
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" 
+        crossorigin="anonymous">
+    </script>
+
+<!--biblioteki mapbox-gl-->
+<link href='https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.min.css' rel='stylesheet'>
+    <script src='https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.js'></script>
+
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+    
+    <!-- usun jesli wszytko dziala
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/geojson/0.5.0/geojson.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+    -->
+
+    <script src='https://npmcdn.com/csv2geojson@latest/csv2geojson.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    
+
+    <!--fonts-->
+    
+    
+    <link href="https://fonts.googleapis.com/css2?family=Lato&family=Open+Sans&family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato&family=Open+Sans&family=Prata&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    
+
+    
+
+    <!--linki do svg do instrukcji-->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  
+
+</head>
+<style>
+
+.modal {
+  z-index: 9999;
+  background: rgba(32, 184, 216,0.15); /* #20b8d8*/
+  
+}
+
+.modal-content {
+  background: #b0dfd7;
+  }
+ 
+.select{
+  border: double thick black; 
+  border-radius: 15px;
+}
+
+.btn-primary{
+  font-family: 'Lato', sans-serif;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: normal;
+    font-size: 15px;
+}
+
+hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 3px solid #2c03fc;
+        margin: 1em 0;
+        padding: 0;
+      }
+
+.navbar { 
+    margin-top: 0; 
+    width: 100%;
+    min-height: 9vh; 
+    z-index: 10;
+    font-family: 'Lato', sans-serif;
+    font-family: 'Open Sans', sans-serif;
+  } 
+
+  .navbar-left  {
+  margin-right: 8vh;
+}
+
+
+/*odstep miedzy przyciskami*/
+.btn-space {
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.btn-pop {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+/* przyciski nawigacyjne mapox gl
+.mapboxgl-ctrl-group + .mapboxgl-ctrl {
+  margin-top: 10px;  
+}
+*/
+/*przycisk zoomu do wyfiltrownych punktow na panelu nawigacyjnym*/
+.mapbox-gl-zoom-to {
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: auto;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjQiPjxwYXRoIGQ9Ik00NTAtNDIwcTM4IDAgNjQtMjZ0MjYtNjRxMC0zOC0yNi02NHQtNjQtMjZxLTM4IDAtNjQgMjZ0LTI2IDY0cTAgMzggMjYgNjR0NjQgMjZabTE5MyAxNjBMNTM4LTM2NXEtMjAgMTMtNDIuNSAxOXQtNDUuNSA2cS03MSAwLTEyMC41LTQ5LjVUMjgwLTUxMHEwLTcxIDQ5LjUtMTIwLjVUNDUwLTY4MHE3MSAwIDEyMC41IDQ5LjVUNjIwLTUxMHEwIDIzLTYuNSA0NS41VDU5NC00MjJsMTA2IDEwNi01NyA1NlpNMjAwLTEyMHEtMzMgMC01Ni41LTIzLjVUMTIwLTIwMHYtMTYwaDgwdjE2MGgxNjB2ODBIMjAwWm00MDAgMHYtODBoMTYwdi0xNjBoODB2MTYwcTAgMzMtMjMuNSA1Ni41VDc2MC0xMjBINjAwWk0xMjAtNjAwdi0xNjBxMC0zMyAyMy41LTU2LjVUMjAwLTg0MGgxNjB2ODBIMjAwdjE2MGgtODBabTY0MCAwdi0xNjBINjAwdi04MGgxNjBxMzMgMCA1Ni41IDIzLjVUODQwLTc2MHYxNjBoLTgwWiIvPjwvc3ZnPg==);
+}
+/*przycisk zoomu do wszystkich punktow na panelu nawigacyjnym*/
+.mapbox-gl-restart-zoom {
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: auto;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjQiPjxwYXRoIGQ9Ik0xNjAtMTYwcS0zMyAwLTU2LjUtMjMuNVQ4MC0yNDB2LTQ4MHEwLTMzIDIzLjUtNTYuNVQxNjAtODAwaDY0MHEzMyAwIDU2LjUgMjMuNVQ4ODAtNzIwdjI4MGgtODB2LTIwMEgxNjB2NDAwaDMyMHY4MEgxNjBaTTc2MCAwcS03MyAwLTEyNy41LTQ1LjVUNTY0LTE2MGg2MnExMyA0NCA0OS41IDcyVDc2MC02MHE1OCAwIDk5LTQxdDQxLTk5cTAtNTgtNDEtOTl0LTk5LTQxcS0yOSAwLTU0IDEwLjVUNjYyLTMwMGg1OHY2MEg1NjB2LTE2MGg2MHY1N3EyNy0yNiA2My00MS41dDc3LTE1LjVxODMgMCAxNDEuNSA1OC41VDk2MC0yMDBxMCA4My01OC41IDE0MS41VDc2MCAwWiIvPjwvc3ZnPg==);
+}
+
+.mapboxgl-popup-close-button {
+  width: 30px; /* Increase width */
+  height: 30px; /* Increase height */
+  font-size: 30px; /* Increase font size of "X" */
+}
+/*ramka popupu*/
+.mapboxgl-popup-content {
+  box-shadow: 0 0 0 2px blue; /* Simulates a blue border */
+}
+
+
+ 
+.map-overlay {
+position: absolute;
+width: 30vh;
+top: 9vh;
+bottom: 20vh;
+left: 0;
+font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+background-color: #efefef;
+max-height: 100%;
+overflow: hidden;
+display:none;
+z-index: 3;
+border:solid thick #1fd9d4;
+background: #bfefe7;
+}
+ 
+.map-overlay fieldset {
+display: none;
+background: #ddd;
+border: none;
+padding: 10px;
+margin: 0;
+}
+ 
+.map-overlay input {
+display: block;
+border: none;
+width: 100%;
+border-radius: 3px;
+padding: 10px;
+margin: 0;
+box-sizing: border-box;
+}
+ 
+.map-overlay .listing {
+overflow: auto;
+max-height: 100%;
+}
+ 
+.map-overlay .listing > * {
+display: block;
+padding: 5px 10px;
+margin: 0;
+}
+ 
+.map-overlay .listing a {
+border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+color: #404;
+text-decoration: none;
+}
+ 
+.map-overlay .listing a:last-child {
+border: none;
+}
+ 
+.map-overlay .listing a:hover {
+background: #f0f0f0;
+}
+
+#map {position: absolute; 
+      top: 8vh; 
+      bottom: 0; 
+      width: 100%;
+      z-index: 1;};
+
+    h1 {
+      font-size: 20px;
+      line-height: 20px;
+      margin-bottom: 4px;
+    }
+    h2 {
+      font-size: 13px;
+      line-height: 13px;
+      margin-bottom: 2px;
+    }
+    h3 {
+      font-size: 10px;
+      line-height: 14px;
+      margin-bottom: 2px;
+    }
+    h5{
+      font-family: 'Lato', sans-serif;
+      font-family: 'Open Sans', sans-serif;
+      margin-bottom: 2px;
+      font-size: 16px;
+    }
+
+    h6{
+      font-family: 'Great Vibes', cursive !important;
+      text-align: right;
+      margin-top: 2px;
+      font-size: 20px;
+    }
+
+    h4{
+      font-family: 'Lato', sans-serif;
+    font-family: 'Open Sans', sans-serif;
+      margin-bottom: 5px;
+      font-size: 20px;
+    }
+
+   
+  </style>
+<body>
+      <nav class="navbar navbar-expand-lg" style="background:linear-gradient(0deg, rgba(255,255,255,1) 0.5%, rgb(129, 168, 230) 10%);">
+        <div class="container-fluid">
+          <button class="navbar-left navbar-fixed-top nav-link" type="button"  data-bs-toggle="modal" data-bs-target="#Infobutton">
+          <img src="https://derylios.github.io/Wakacje/logo.svg" alt="" height="40" class="d-inline-block align-text-top"/> <!-- width="40" height="40" -->
+        </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <!-- Przycisk Albumy -->
+              <li role="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#lata" style="color: white;">
+                  Albumy
+              </li>
+              <!-- Przycisk punktow w zasiegu -->
+              <li role="button" class= "nav-link" id="zasiegbutton" data-toggle="buttons" style="color: white;">
+                <input type="checkbox" class="map-overlay" checked autocomplete="off" hidden>Punkty w zasięgu
+              </li>
+              <!-- Przycisk filtrow -->
+            <li id='filterResults' type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#myModal" style="color: white;">
+              Filtry
+            </li>
+            </ul>
+            <div id="geocoder" class="geocoder my-2 my-sm-0"></div> <!--Wyszukuje lokalizacje-->
+          </div>
+        </div>
+      </nav>
+        <!--dodanie mapy-->
+        <div id="map"></div>
+
+      <!-- Funkcja przycisku wstep -->
+  <div class="modal fade" id="Infobutton" aria-hidden="true" aria-labelledby="WitajLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ModalToggleLabel">WYCIECZKOLOT</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <!--modul z paskiem tekstem powitalnym-->
+        <div class="modal-body">
+          <div class="row modal-body container-fluid"> <!--zawartosc modulu-->
+            <h4><p><b>Cześć!</b> &#128512</p></h4>
+            <h4><p>Witaj w aplikacji <b>Wycieczkolot!</b> 
+                Aplikacja ta obrazuje na mapie nasze przygody w trakcie wspólnego zdobywania świata.</p>
+              <p>Poniżej znajdziesz przewodnik po aplikacji.</p>
+            </h4>
+              <h4><p>Miłej zabawy przy przeglądaniu &#x1F609</p></h4>
+            
+            <h6><p>Natalia Grabińska i Jakub Krzyżanowski</p></h6>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#Instrukcja" data-bs-toggle="modal">Instrukcja</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Zamknij</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Modul dla instrukcji-->
+  <div class="modal fade" id="Instrukcja" aria-hidden="true" aria-labelledby="InstrukcjaLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="InstrukcjaLabel">Instrukcja</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row modal-body container-fluid"> <!--zawartosc modulu-->
+            <p>Aplikacja ta pokazuje na mapie punkty, oznaczające miejsca zrobienia zdjęć. 
+              Po kliknięciu w taki punkt wyświetla się chmurka ze zdjęciem oraz "nazwa" wycieczki na której zrobiono zdjęcie wraz z datą wykonania.
+              Poniżej zdjęcia znajduje się przycisk "Link", po wciśniciu którego wyświetla się w sąsiedniej karcie przeglądarki zdjęcie w pełnym rozmiarze
+            </p>
+            <hr>
+            <p>Aby przyjemniej się korzystało z aplikacji pojedyńcze, znajdujące się blisko siebie punkty są grupowane w większe punkty (clustry), 
+              zwierające informacje ile punktów znaduje się w tej okolicy. Po kliknięciu w cluster mapa przybliża się, 
+              pokazując mniejsze grupki punktów.
+            </p>
+            <hr>
+            <p>Sterować aplikacją możemy za pomocą dwoch paneli, głównym Menu znajdującym sie na górze, obok logo aplikacji 
+              oraz za pomocą panelu nawigacyjnego, znajdującego się w prawym, górnym rogu mapy. Oba te panele zostały omówione w kolejnych krokach.
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#InstrukcjaMenu" data-bs-toggle="modal">Panel Menu</button>
+          <button class="btn btn-primary" data-bs-target="#InstrukcjaNawigacja" data-bs-toggle="modal">Panel Nawigacyny</button>
+          <button class="btn btn-primary" data-bs-target="#Infobutton" data-bs-toggle="modal">Wstecz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!--Modul dla instrukcji Menu-->
+  <div class="modal fade" id="InstrukcjaMenu" aria-hidden="true" aria-labelledby="InstrukcjaMenuLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header"> <!--tytul modulu-->
+          <h1 class="modal-title fs-5" id="InstrukcjaMenuLabel">Menu główne - instrukcja</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p>Główne Menu znajduje sie na górze ekanu. Na telefonach oraz małych ekranach będzie się rozwijało po wciśnięciu przycisku obok logo.
+              Znajduje się na nim wyszukiwarka, w której można wyszukać miejsce po adresie. 
+              W Menu znajduja się również przyciski uruchamiające inne funkcje:
+            </p>
+            <hr>
+            <h5><center>Albumy</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Przycisk "Albumy" uruchamia panel z katalogami zdjęć z wycieczek. Jest on podzielony na kilka okienek. 
+                W pierwszym okienku znajdują się foldery z latami. Po kliknięciu w dany rok otwiera się drugie okienko,
+                w którym znajdują się wycieczki z tego roku. 
+                Kliknięcie w nazwe danej wycieczki, przenosi nas do katalogamu ze zdjęciami z teg wycieczki na dysku Google, 
+                na kolejnej karcie przeglądarki.
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <li role="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#lata" style="color: rgb(0, 0, 0);">
+                  Albumy
+              </li>
+              <!--Przykład:
+              div class="col-md-4 d-flex align-items-center"> 
+                <button type="button" class="btn btn-secondary">Your Button</button>
+              </div>-->
+              </div>
+            </div>
+            <hr>
+            <h5><center>Punkty w zasięgu</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Przycisk "Punkty w zasięgu" uruchamia z lewej strony ekranu panel, na którym wyświetlana jest lista widocznych pojedyńczych
+                punktów na mapie. Klkniecie w konkertną pozycję na liście otwiera zdjęcie na kolejnej karcie przeglądarki
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <li role="button" class= "nav-link" id="zasiegbutton" data-toggle="buttons" style="color: rgb(0, 0, 0);">
+                  <input type="checkbox" class="map-overlay" checked autocomplete="off" hidden>Punkty w zasięgu
+                </li>
+              </div>
+            </div>
+            <hr>
+            <h5><center>Filtry</center></h5>
+            <p> </p>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Przycisk "Filtry" uruchamia panel w którym możemy selekcjonować wyświetlane na mapie punkty ze względu na nazwę wycieczki oraz rok wycieczki. 
+                Na dole panelu znajdują się trzy przyciski. Środkowy "Wyczyść filtry", przywraca początowe ustawienia, 
+                natomiast dwa pozostałe odpowiadają za widok mapy. Przycisk "Przybliż widok" przybliża do wybranych punktów, 
+                natomiast "Przywróć widok" oddala mapę do zasęgu wszytkich punktów.
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <li id='filterResults' type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#myModal" style="color: rgb(0, 0, 0);">
+                  Filtry
+                </li>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#InstrukcjaNawigacja" data-bs-toggle="modal">Panel Nawigacyny - instrukcja</button>
+          <button class="btn btn-primary" data-bs-target="#Instrukcja" data-bs-toggle="modal">Wstecz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <!--Modul dla instrukcji panelu nawigacyjnego-->
+  <div class="modal fade" id="InstrukcjaNawigacja" aria-hidden="true" aria-labelledby="InstrukcjaNawigacjaLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header"> <!--tytul modulu-->
+          <h1 class="modal-title fs-5" id="InstrukcjaNawigacjaLabel">Panel nawigacyjny</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p>Penel nawigacyjny znajduje się w prawym, górnym rogu mapy. Narzędzia te służą do sterowania mapą.
+            </p>
+            <hr>
+            <h5><center>Kontrola mapy</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Dzięki tym narzędziom możemy przybliżać i oddalać mapę. Przytrzymując przycisk kompasu możemy obracać mapą, 
+                a po wciśnięciu go mapa powraca do początkowej orientacji. 
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <button class="nav-link" type="button">
+                  <img src="https://derylios.github.io/Wakacje/instrukcja/navi.svg" alt="" height="90" class="d-inline-block align-text-top"/>
+                </button>
+              </div>
+            </div>
+            <hr>
+            <h5><center>Pełny ekran</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Przycisk ten rozszerza mapę na cały ekran.
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <button class="nav-link" type="button">
+                  <span class="material-symbols-outlined" style="font-size:60px">zoom_out_map</span>
+                </button>
+              </div>
+            </div>
+            <hr>
+            <h5><center>Przybliż do zaznaczonych</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Ten przycisk przybliża do wybranych punktów wcześniej w filtrach (funkcja dostepna w Menu). 
+                Działa tylko jeśli filtry są aktywne.  
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <button class="nav-link" type="button">
+                  <span class="material-symbols-outlined" style="font-size:60px">frame_inspect</span>
+                </button>
+              </div>
+            </div>
+            <hr>
+            <h5><center>Przybliż do wszystkich</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Ten przycisk przybliża mapę do wszystkich punktów, również tych niewybranych w filtrach.
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <button class="nav-link" type="button">
+                  <span class="material-symbols-outlined" style="font-size:60px">reopen_window</span>
+                </button>
+              </div>
+            </div>
+            <hr>
+            <h5><center>Lokalizacja</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Przycisk uruchamia funkcję lokalizującą użykownika.
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <button class="nav-link" type="button">
+                  <span class="material-symbols-outlined" style="font-size:60px">my_location</span>
+                </button>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#InstrukcjaMenu" data-bs-toggle="modal">Panel Menu</button>
+          <button class="btn btn-primary" data-bs-target="#Instrukcja" data-bs-toggle="modal">Wstecz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Modul z filtrami  -->
+    <div class="modal fade" id="myModal"  aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+           <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel"><b>FILTRY</b></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+           </div>
+          <div class="modal-body flex-parent flex-parent--center-main">
+            <form id="filters"></form>
+          </div>
+            <div class="modal-footer flex-parent flex-parent--center-main">
+                <button id="zoomToAllButton" class="btn">Przwróć widok</button>
+                <button id="removeFilters" class="btn">Wyczyść filtry</button>
+                <button id="zoomToButton" class="btn">Przybliż widok</button>
+            </div>
+        </div>    
+      </div>
+    </div>
+
+      <!--Modul z punktami w zasiegu mapy-->
+      <div class="map-overlay">
+        <fieldset>
+          <input
+            id="feature-filter"
+            type="text"
+            placeholder="Szukaj"
+          />
+        </fieldset>
+        <div id="feature-listing" class="listing"></div>`
+      </div>
+
+
+  <!-- Funkcja przycisku Album -->
+  <div class="modal fade" id="lata" aria-hidden="true" aria-labelledby="lataLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ModalToggleLabel">WYCIECZKI</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <!--modul z latami-->
+        <div class="modal-body">
+          <div class="row modal-body container-fluid"> <!--zawartosc modulu-->
+            <button class="btn btn-primary col-sm-3 btn-space" data-bs-target="#ModalToggle2021" data-bs-toggle="modal">2021</button>
+            <button class="btn btn-primary col-sm-3 btn-space" data-bs-target="#ModalToggle2022" data-bs-toggle="modal">2022</button>
+            <button class="btn btn-primary col-sm-3 btn-space" data-bs-target="#ModalToggle2023" data-bs-toggle="modal">2023</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Modul dla roku 2021-->
+  <div class="modal fade" id="ModalToggle2021" aria-hidden="true" aria-labelledby="ModalToggleLabel2021" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ModalToggleLabel2021">2021</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row modal-body container-fluid"> <!--zawartosc modulu-->
+            <a href="https://drive.google.com/drive/folders/1GtXJm-YMQoxz4gyahkLVHWqXruV6k2wo?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">SOLINA</a>
+            <a href="https://drive.google.com/drive/folders/1Ls2l537kuM0YDWEtVWJFvSkZZaMRjnBy?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">KRAKÓW</a>
+            <a href="https://drive.google.com/drive/folders/1uDvI4Vwad-sc0F7QLi_FszTIKCSlJIZI?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">WROCŁAW</a>
+            <a href="https://drive.google.com/drive/folders/1o3Jke4wTcLEio-fToR34gI9rMWF-Ofi4?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">PRAGA</a>
+            <a href="https://drive.google.com/drive/folders/1YXGrV_AYRWjgHChzJayGj1WIaJfx8JCg?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">KRETA</a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#lata" data-bs-toggle="modal">Wstecz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Modul dla roku 2022-->
+  <div class="modal fade" id="ModalToggle2022" aria-hidden="true" aria-labelledby="ModalToggleLabel2022" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ModalToggleLabel2022">2022</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row modal-body container-fluid"> <!--zawartosc modulu-->
+            <a href="https://drive.google.com/drive/folders/1GtXJm-YMQoxz4gyahkLVHWqXruV6k2wo?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">SOLINA</a>
+            <a href="https://drive.google.com/drive/folders/1Ls2l537kuM0YDWEtVWJFvSkZZaMRjnBy?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">KRAKÓW</a>
+            <a href="https://drive.google.com/drive/folders/1uDvI4Vwad-sc0F7QLi_FszTIKCSlJIZI?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">WROCŁAW</a>
+            <a href="https://drive.google.com/drive/folders/1o3Jke4wTcLEio-fToR34gI9rMWF-Ofi4?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">PRAGA</a>
+            <a href="https://drive.google.com/drive/folders/1YXGrV_AYRWjgHChzJayGj1WIaJfx8JCg?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">KRETA</a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#lata" data-bs-toggle="modal">Wstecz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Modul dla roku 2023-->
+  <div class="modal fade" id="ModalToggle2023" aria-hidden="true" aria-labelledby="ModalToggleLabel2023" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ModalToggleLabel2021">2023</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row modal-body container-fluid"> <!--zawartosc modulu-->
+            <a href="https://drive.google.com/drive/folders/1GtXJm-YMQoxz4gyahkLVHWqXruV6k2wo?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">SOLINA</a>
+            <a href="https://drive.google.com/drive/folders/1Ls2l537kuM0YDWEtVWJFvSkZZaMRjnBy?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">KRAKÓW</a>
+            <a href="https://drive.google.com/drive/folders/1uDvI4Vwad-sc0F7QLi_FszTIKCSlJIZI?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">WROCŁAW</a>
+            <a href="https://drive.google.com/drive/folders/1o3Jke4wTcLEio-fToR34gI9rMWF-Ofi4?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">PRAGA</a>
+            <a href="https://drive.google.com/drive/folders/1YXGrV_AYRWjgHChzJayGj1WIaJfx8JCg?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">KRETA</a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#lata" data-bs-toggle="modal">Wstecz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+
+<script>
+//Przycisk uruchamiajacy panel z lista obektow w zasiegu widoku mapy
+$(document).ready(function(){
+    $("#zasiegbutton").click(function(){
+    $(".map-overlay").slideToggle("slow");
+    });
+  });
+  
+
+
+// eslint-disable-next-line no-unused-vars
+mapboxgl.accessToken = 'pk.eyJ1Ijoia3J6eXphayIsImEiOiJjam5jdmdzbWIyM3hyM3ZtbGIyZnV3aWYwIn0.AFENpSzlRwtosUI1efT5ow';
+    const map = new mapboxgl.Map({
+    container: 'map', // container ID
+    // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+    style: 'mapbox://styles/krzyzak/ck5cmlmj209541coa3kle30og', // style URL
+    center: [26.130,50.306], // starting position [lng, lat]
+    zoom: 4, // starting zoom
+    projection: 'globe' // display the map as a 3D globe
+    });
+
+const config = {
+  
+  CSV:'https://derylios.github.io/Wakacje/wycieczki.csv',//'./wycieczki.csv',
+  //'https://derylios.github.io/Wakacje/wycieczki.csv',
+  
+  //Filtry
+  filters: [
+    {
+      type: 'dropdown',
+      title: 'Rok: ',
+      columnHeader: 'rok', // nazwa kolumny w CSV
+      listItems: [ //tu dadac lata
+        '2021',
+        '2022',
+      ],
+    },
+
+    {
+      type: 'checkbox',
+      title: 'Wycieczki: ',
+      columnHeader: 'nazwa', // nazwa kolumny w CSV 
+      listItems: ['Solina', 'Wroclaw', 'Krakow', 'Praga', 'Kreta', 'Kazimierz Dolny'],//dodać nazwy wycieczki
+    }, // ListItems - Case sensitive - must match spreadsheet entry; This will take up to six inputs but is best used with a maximum of three;
+  ],
+  
+};
+
+let geojsonData = {};
+const filteredGeojson = {
+  type: 'FeatureCollection',
+  features: [],
+};
+
+
+// Holds visible wycieczki features for filtering
+let wycieczki = [];
+ 
+// Create a popup, but don't add it to the map yet.
+const popups = new mapboxgl.Popup({
+closeButton: false
+});
+ 
+const filterEl = document.getElementById('feature-filter');
+const listingEl = document.getElementById('feature-listing');
+ 
+function renderListings(features) {
+const empty = document.createElement('p');
+// Clear any existing listings
+listingEl.innerHTML = '';
+if (features.length) {
+for (const feature of features) {
+const itemLink = document.createElement('a');
+const label = `${feature.properties.nazwa} (${feature.properties.data})`;
+itemLink.href = feature.properties.adres2;
+itemLink.target = '_blank';
+itemLink.textContent = label;
+itemLink.addEventListener('mouseover', () => {
+// Highlight corresponding feature on the map
+popups
+.setLngLat(feature.geometry.coordinates)
+.setText(label)
+.addTo(map);
+});
+listingEl.appendChild(itemLink);
+}
+ 
+// Show the filter input
+filterEl.parentNode.style.display = 'block';
+} else if (features.length === 0 && filterEl.value !== '') {
+empty.textContent = 'pusto';
+listingEl.appendChild(empty);
+} else {
+empty.textContent = 'Przybliż do pojedyńczych punktów';
+listingEl.appendChild(empty);
+ 
+// Hide the filter input
+//filterEl.parentNode.style.display = 'none';
+}
+}
+ 
+function normalize(string) {
+return string.trim().toLowerCase();
+}
+ 
+// Because features come from tiled vector data,
+// feature geometries may be split
+// or duplicated across tile boundaries.
+// As a result, features may appear
+// multiple times in query results.
+function getUniqueFeatures(features, comparatorProperty) {
+const uniqueIds = new Set();
+const uniqueFeatures = [];
+for (const feature of features) {
+const id = feature.properties[comparatorProperty];
+if (!uniqueIds.has(id)) {
+uniqueIds.add(id);
+uniqueFeatures.push(feature);
+}
+}
+return uniqueFeatures;
+}
+
+
+// Build dropdown list function
+// title - the name or 'category' of the selection e.g. 'Languages: '
+// defaultValue - the default option for the dropdown list
+// listItems - the array of filter items
+
+function buildDropDownList(title, listItems) {
+  const filtersDiv = document.getElementById('filters');
+  const mainDiv = document.createElement('div');
+  const filterTitle = document.createElement('div');
+  filterTitle.innerText = title;
+  filterTitle.classList.add('center', 'flex-parent', 'py12', 'txt-bold');
+  mainDiv.appendChild(filterTitle);
+
+  const selectContainer = document.createElement('div');
+  selectContainer.classList.add('select-container', 'center');
+
+  const dropDown = document.createElement('select');
+  dropDown.classList.add('select', 'filter-option');
+
+  const selectArrow = document.createElement('div');
+  selectArrow.classList.add('select-arrow');
+
+  const firstOption = document.createElement('option');
+
+  dropDown.appendChild(firstOption);
+  selectContainer.appendChild(dropDown);
+  selectContainer.appendChild(selectArrow);
+  mainDiv.appendChild(selectContainer);
+
+  for (let i = 0; i < listItems.length; i++) {
+    const opt = listItems[i];
+    const el1 = document.createElement('option');
+    el1.textContent = opt;
+    el1.value = opt;
+    dropDown.appendChild(el1);
+  }
+  filtersDiv.appendChild(mainDiv);
+}
+
+// Build checkbox function
+// title - the name or 'category' of the selection e.g. 'Languages: '
+// listItems - the array of filter items
+
+
+function buildCheckbox(title, listItems) {
+  const filtersDiv = document.getElementById('filters');
+  const mainDiv = document.createElement('div');
+  const filterTitle = document.createElement('div');
+  const formatcontainer = document.createElement('div');
+  filterTitle.classList.add('center', 'flex-parent', 'py12', 'txt-bold');
+  formatcontainer.classList.add(
+    'center',
+    'flex-parent',
+    'flex-parent--column',
+    'px3',
+    'flex-parent--space-between-main',
+  );
+  const secondLine = document.createElement('div');
+  secondLine.classList.add(
+    'center',
+    'flex-parent',
+    'py12',
+    'px3',
+    'flex-parent--space-between-main',
+  );
+  filterTitle.innerText = title;
+  mainDiv.appendChild(filterTitle);
+  mainDiv.appendChild(formatcontainer);
+
+  for (let i = 0; i < listItems.length; i++) {
+    const container = document.createElement('label');
+
+    container.classList.add('checkbox-container');
+
+    const input = document.createElement('input');
+    input.classList.add('px12', 'filter-option');
+    input.setAttribute('type', 'checkbox');
+    input.setAttribute('id', listItems[i]);
+    input.setAttribute('value', listItems[i]);
+
+    const checkboxDiv = document.createElement('div');
+    const inputValue = document.createElement('p');
+    inputValue.innerText = listItems[i];
+    checkboxDiv.classList.add('checkbox', 'mr6');
+    checkboxDiv.appendChild(Assembly.createIcon('check'));
+
+    container.appendChild(input);
+    container.appendChild(checkboxDiv);
+    container.appendChild(inputValue);
+
+    formatcontainer.appendChild(container);
+  }
+  filtersDiv.appendChild(mainDiv);
+}
+
+const selectFilters = [];
+const checkboxFilters = [];
+
+function createFilterObject(filterSettings) {
+  filterSettings.forEach((filter) => {
+    if (filter.type === 'checkbox') {
+      const keyValues = {};
+      Object.assign(keyValues, {
+        header: filter.columnHeader,
+        value: filter.listItems,
+      });
+      checkboxFilters.push(keyValues);
+    }
+    if (filter.type === 'dropdown') {
+      const keyValues = {};
+      Object.assign(keyValues, {
+        header: filter.columnHeader,
+        value: filter.listItems,
+      });
+      selectFilters.push(keyValues);
+    }
+  });
+}
+
+function applyFilters() {
+  const filterForm = document.getElementById('filters');
+
+  filterForm.addEventListener('change', function () {
+    const filterOptionHTML = this.getElementsByClassName('filter-option');
+    const filterOption = [].slice.call(filterOptionHTML);
+
+    const geojSelectFilters = [];
+    const geojCheckboxFilters = [];
+
+    filteredGeojson.features = [];
+
+    filterOption.forEach((filter) => {
+      if (filter.type === 'checkbox' && filter.checked) {
+        checkboxFilters.forEach((objs) => {
+          Object.entries(objs).forEach(([, value]) => {
+            if (value.includes(filter.value)) {
+              const geojFilter = [objs.header, filter.value];
+              geojCheckboxFilters.push(geojFilter);
+            }
+          });
+        });
+      }
+      if (filter.type === 'select-one' && filter.value) {
+        selectFilters.forEach((objs) => {
+          Object.entries(objs).forEach(([, value]) => {
+            if (value.includes(filter.value)) {
+              const geojFilter = [objs.header, filter.value];
+              geojSelectFilters.push(geojFilter);
+            }
+          });
+        });
+      }
+    });
+
+    if (geojCheckboxFilters.length === 0 && geojSelectFilters.length === 0) {
+      geojsonData.features.forEach((feature) => {
+        filteredGeojson.features.push(feature);
+      });
+    } else if (geojCheckboxFilters.length > 0) {
+      geojCheckboxFilters.forEach((filter) => {
+        geojsonData.features.forEach((feature) => {
+          if (feature.properties[filter[0]].includes(filter[1])) {
+            if (
+              filteredGeojson.features.filter(
+                (f) => f.properties.id === feature.properties.id,
+              ).length === 0
+            ) {
+              filteredGeojson.features.push(feature);
+            }
+          }
+        });
+      });
+      if (geojSelectFilters.length > 0) {
+        const removeIds = [];
+        filteredGeojson.features.forEach((feature) => {
+          let selected = true;
+          geojSelectFilters.forEach((filter) => {
+            if (
+              feature.properties[filter[0]].indexOf(filter[1]) < 0 &&
+              selected === true
+            ) {
+              selected = false;
+              removeIds.push(feature.properties.id);
+            } else if (selected === false) {
+              removeIds.push(feature.properties.id);
+            }
+          });
+        });
+        let uniqueRemoveIds = [...new Set(removeIds)];
+        uniqueRemoveIds.forEach(function (id) {
+          const idx = filteredGeojson.features.findIndex(
+            (f) => f.properties.id === id,
+          );
+          filteredGeojson.features.splice(idx, 1);
+        });
+      }
+    } else {
+      geojsonData.features.forEach((feature) => {
+        let selected = true;
+        geojSelectFilters.forEach((filter) => {
+          if (
+            !feature.properties[filter[0]].includes(filter[1]) &&
+            selected === true
+          ) {
+            selected = false;
+          }
+        });
+        if (
+          selected === true &&
+          filteredGeojson.features.filter(
+            (f) => f.properties.id === feature.properties.id,
+          ).length === 0
+        ) {
+          filteredGeojson.features.push(feature);
+        }
+      });
+    }
+
+    map.getSource('locationData').setData(filteredGeojson);
+  });
+}
+
+function filters(filterSettings) {
+  filterSettings.forEach((filter) => {
+    if (filter.type === 'checkbox') {
+      buildCheckbox(filter.title, filter.listItems);
+    } else if (filter.type === 'dropdown') {
+      buildDropDownList(filter.title, filter.listItems);
+    }
+  });
+}
+
+function removeFilters() {
+  const input = document.getElementsByTagName('input');
+  const select = document.getElementsByTagName('select');
+  const selectOption = [].slice.call(select);
+  const checkboxOption = [].slice.call(input);
+  filteredGeojson.features = [];
+  checkboxOption.forEach((checkbox) => {
+    if (checkbox.type === 'checkbox' && checkbox.checked === true) {
+      checkbox.checked = false;
+    }
+  });
+
+  selectOption.forEach((option) => {
+    option.selectedIndex = 0;
+  });
+
+  map.getSource('locationData').setData(geojsonData);
+  buildLocationList(geojsonData);
+}
+//funkcja przycisku removefilters w module filtry
+function removeFiltersButton() {
+  const removeFilter = document.getElementById('removeFilters');
+  removeFilter.addEventListener('click', () => {
+    removeFilters();
+  });
+}
+//dodanie funkcji przycisku przylizajacego do wybranych punktow na mapie w module filtry
+function ZoomToButton() {
+document.getElementById('zoomToButton').addEventListener('click', () => {
+  const bounds = getBoundsForPoints(filteredGeojson.features);
+  map.fitBounds(bounds, { padding: 50 });
+});
+}
+//dodanie funkcji przycisku przylizajacego do wszystkich punktow na mapie w module filtry
+function ZoomToAllButton() {
+document.getElementById('zoomToAllButton').addEventListener('click', () => {
+  const bounds = getBoundsForPoints(geojsonData.features);
+  map.fitBounds(bounds, { padding: 50 });
+});
+}
+
+createFilterObject(config.filters);
+applyFilters();
+filters(config.filters);
+removeFiltersButton();
+ZoomToButton();
+ZoomToAllButton();
+
+
+//dodanie danych z csv csv
+map.on('load', () => {
+  map.setFog({}); // Set the default atmosphere style
+  // csv2geojson - following the Sheet Mapper tutorial https://www.mapbox.com/impact-tools/sheet-mapper
+  console.log('loaded');
+  $(document).ready(() => {
+    console.log('ready');
+    $.ajax({
+      type: 'GET',
+      url: config.CSV,
+      dataType: 'text',
+      success: function (csvData) {
+        makeGeoJSON(csvData);
+      },
+      error: function (request, status, error) {
+        console.log(request);
+        console.log(status);
+        console.log(error);
+      },
+    });
+  });
+
+  function makeGeoJSON(csvData) {
+    csv2geojson.csv2geojson(
+      csvData,
+      {
+        latfield: 'latitude',
+        lonfield: 'longitude',
+        delimiter: ';',
+      },
+      (err, data) => {
+        data.features.forEach((data, i) => {
+          data.properties.id = i;
+        });
+
+        geojsonData = data;
+        // Add the the layer to the map
+        map.addLayer({
+          id: 'locationData',
+          type: 'circle',
+          source: {
+            type: 'geojson',
+            data: geojsonData,
+            cluster: true,
+            clusterMaxZoom: 40, // Max zoom to cluster points on
+            clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
+          },
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': [  //'#3D2E5D', // color of circles
+              'step',
+              ['get', 'point_count'],
+              '#6a3d9a',
+              5,
+              '#cab2d6',
+              15,
+              '#ff7f00',
+              35,
+              '#fdbf6f',
+              50,
+              '#e31a1c',
+              100,
+              '#fb9a99',
+              200,
+              '#33a02c',
+              400,
+              '#b2df8a',
+              700,
+              '#1f78b4',
+              1000,
+              '#a6cee3',
+              ],
+            'circle-radius': [  //5, // size of circles
+              'step',
+              ['get', 'point_count'],
+              10,
+              5,
+              15,
+              50,
+              20,
+              100,
+              25,
+              200,
+              35,
+              400,
+              45,
+              1000,
+              60
+            ],
+            //'circle-stroke-color': 'white',
+            //'circle-stroke-width': 1,
+            //'circle-opacity': 0.7,
+          },
+        });
+
+        map.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'locationData',
+          filter: ['has', 'point_count'],
+          layout: {
+          'text-field': '{point_count_abbreviated}',
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 12
+          }
+        });
+          
+         map.addLayer({
+          id: 'unclustered-point',
+          type: 'circle',
+          source: {
+            type: 'geojson',
+            data: geojsonData,
+            cluster: true,
+            //clusterMaxZoom: 14, // Max zoom to cluster points on
+            //clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
+          },
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+          'circle-color': '#81A8E6',
+          'circle-radius': 5,
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#fff'
+          }
+        });
+
+        // inspect a cluster on click
+map.on('click', 'locationData', (e) => {
+const features = map.queryRenderedFeatures(e.point, {
+layers: ['locationData']
+});
+const clusterId = features[0].properties.cluster_id;
+map.getSource('locationData').getClusterExpansionZoom(
+  clusterId,
+(err, zoom) => {
+  if (err) return;
+
+map.easeTo({
+center: features[0].geometry.coordinates,
+zoom: zoom
+});
+}
+);
+});
+ 
+// When a click event occurs on a feature in
+// the unclustered-point layer, open a popup at
+// the location of the feature, with
+// description HTML from its properties.
+
+map.on('click', 'unclustered-point', (e) => {
+    const coordinates = e.features[0].geometry.coordinates.slice();
+    const nazwa = e.features[0].properties.nazwa;
+    const godzina = e.features[0].properties.godz;
+    const Rok = e.features[0].properties.rok;
+    const data = e.features[0].properties.data;
+    const przycisk = e.features[0].properties['adres2'];
+    //e.features[0].properties.adres2
+    // upewnienie sie, ze popup wyswietla sie nad zaznaczonym obiektem
+    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+      coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    }
+    
+// Ensure that if the map is zoomed out such that
+// multiple copies of the feature are visible, the
+// popup appears over the copy being pointed to.
+//while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+//coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+//};
+ 
+new mapboxgl.Popup()
+      .setLngLat(coordinates)
+      .setHTML("<h2><center><strong>"+nazwa+'</strong></center></h2><center><h1><center><strong>'+data+"</strong></center></h1><h3><center><strong>"+godzina+"</strong></center></h3><img src="+e.features[0].properties['adres']+' width=auto height=auto/></center><center><a href="'+przycisk+'" target=_blank role=button class="btn btn-primary btn-pop col-6 mx-auto" title="Wczytaj zdjęcie" >Link</a></center>')
+      .addTo(map);
+      flyToLocation(e.features[0].geometry.coordinates);
+     
+  });
+ 
+map.on('mouseenter', 'locationData', () => {
+map.getCanvas().style.cursor = 'pointer';
+});
+map.on('mouseleave', 'locationData', () => {
+map.getCanvas().style.cursor = '';
+});
+
+map.on('mouseenter', 'unclustered-point', () => {
+map.getCanvas().style.cursor = 'pointer';
+});
+map.on('mouseleave', 'unclustered-point', () => {
+map.getCanvas().style.cursor = '';
+});
+
+      },
+    );
+
+  }
+
+
+ 
+map.on('moveend', () => {
+const features = map.queryRenderedFeatures({ layers: ['unclustered-point'] });
+ 
+if (features) {
+const uniqueFeatures = getUniqueFeatures(features, 'id');
+// Populate features for the listing overlay.
+renderListings(uniqueFeatures);
+ 
+// Clear the input container
+filterEl.value = '';
+ 
+// Store the current features in sn `layer` variable to
+// later use for filtering on `keyup`.
+wycieczki = uniqueFeatures;
+}
+});
+ 
+map.on('mousemove', 'locationData', (e) => {
+// Change the cursor style as a UI indicator.
+map.getCanvas().style.cursor = 'pointer';
+ 
+/* Populate the popup and set its coordinates based on the feature.
+const feature = e.features[0];
+popup
+.setLngLat(feature.geometry.coordinates)
+.setText(
+`${feature.properties.nazwa} (${feature.properties.rok})`
+)
+.addTo(map);
+*/
+});
+ 
+map.on('mouseleave', 'locationData', () => {
+map.getCanvas().style.cursor = '';
+popup.remove();
+});
+ 
+filterEl.addEventListener('keyup', (e) => {
+const value = normalize(e.target.value);
+ 
+// Filter visible features that match the input value.
+const filtered = [];
+for (const feature of wycieczki) {
+const name = normalize(feature.properties.nazwa);
+const code = normalize(feature.properties.rok);
+if (name.includes(value) || code.includes(value)) {
+filtered.push(feature);
+}
+}
+ 
+// Populate the sidebar with filtered results
+renderListings(filtered);
+ 
+// Set the filter to populate features into the layer.
+if (filtered.length) {
+map.setFilter('locationData', [
+'match',
+['get', 'id'],
+filtered.map((feature) => {
+return feature.properties.nazwa;
+}),
+true,
+false
+]);
+}
+});
+ 
+// Call this function on initialization
+// passing an empty array to render an empty state
+renderListings([]);
+});
+
+function transformRequest(url) {
+  const isMapboxRequest =
+    url.slice(8, 22) === 'api.mapbox.com' ||
+    url.slice(10, 26) === 'tiles.mapbox.com';
+  return {
+    url: isMapboxRequest ? url.replace('?', '?pluginName=finder&') : url,
+  };
+}
+
+
+ //skala  
+ var scale = new mapboxgl.ScaleControl({
+          maxWidth: 100,
+          unit: 'imperial'
+        });
+        map.addControl(scale);
+        scale.setUnit('metric');
+
+
+        // Add the control to the map.
+        var geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl
+        });
+        
+        document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+
+//Funkcja wyszukjąca i przyblizajca do wybranych punktow
+const getBoundsForPoints = (points) => {
+  const pointsLong = points.map(point => point.geometry.coordinates[0])
+  const pointsLat = points.map(point => point.geometry.coordinates[1])
+  const cornersLongLat = [
+    [Math.min(...pointsLong), Math.min(...pointsLat)],
+    [Math.max(...pointsLong), Math.max(...pointsLat)]
+  ]
+  return cornersLongLat;
+}
+
+//Tworzenie miejsca z przyciskami nawigacyjnymi
+class MapboxGLButtonControl {
+  constructor({
+    className = "",
+    title = "",
+    eventHandler = evtHndlr
+  }) {
+    this._className = className;
+    this._title = title;
+    this._eventHandler = eventHandler;
+  }
+
+  onAdd(map) {
+    this._btn = document.createElement("button");
+    this._btn.className = "mapboxgl-ctrl-icon" + " " + this._className;
+    this._btn.type = "button";
+    this._btn.title = this._title;
+    this._btn.onclick = this._eventHandler;
+
+    this._container = document.createElement("div");
+    this._container.className = "mapboxgl-ctrl-group mapboxgl-ctrl";
+    this._container.appendChild(this._btn);
+
+    return this._container;
+  }
+
+  onRemove() {
+    this._container.parentNode.removeChild(this._container);
+    this._map = undefined;
+  }
+}
+
+/* Event Handlers */
+function one(event) {
+  console.log();
+            // Add your custom logic here
+            const bounds = getBoundsForPoints(filteredGeojson.features);
+            map.fitBounds(bounds, { padding: 40 });
+}
+
+function two(event) {
+  console.log();
+            // Add your custom logic here
+            const bounds = getBoundsForPoints(geojsonData.features);
+            map.fitBounds(bounds, { padding: 40 });
+}
+
+const ctrlZoom = new MapboxGLButtonControl({
+  className: "mapbox-gl-zoom-to",
+  title: "zbliz do szukanych",
+  eventHandler: one
+});
+
+const ctrlReZoom = new MapboxGLButtonControl({
+  className: "mapbox-gl-restart-zoom",
+  title: "wszystkie punkty",
+  eventHandler: two
+});
+/* Add Controls to the Map */
+map.addControl(new mapboxgl.NavigationControl(), "top-right");
+map.addControl(new mapboxgl.FullscreenControl(), "top-right");
+map.addControl(ctrlZoom, "top-right");
+map.addControl(ctrlReZoom, "top-right");
+// Add geolocate control to the map.
+map.addControl(
+new mapboxgl.GeolocateControl({
+positionOptions: {
+enableHighAccuracy: true
+},
+// When active the map will receive updates to the device's location as it changes.
+trackUserLocation: true,
+// Draw an arrow next to the location dot to indicate which direction the device is heading.
+showUserHeading: true
+})
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</html>
