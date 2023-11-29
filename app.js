@@ -29,6 +29,7 @@ const config = {
       listItems: [ //tu dadac lata
         '2021',
         '2022',
+        '2040',
       ],
     },
 
@@ -36,7 +37,7 @@ const config = {
       type: 'checkbox',
       title: 'Wycieczki: ',
       columnHeader: 'nazwa', // nazwa kolumny w CSV 
-      listItems: ['Solina', 'Wroclaw', 'Krakow', 'Praga', 'Kreta', 'Kazimierz Dolny'],//dodać nazwy wycieczki
+      listItems: ['Solina', 'Wroclaw', 'Krakow', 'Praga', 'Kreta', 'Kazimierz Dolny', 'Warszawa'],//dodać nazwy wycieczki
     }, // ListItems - Case sensitive - must match spreadsheet entry; This will take up to six inputs but is best used with a maximum of three;
   ],
   
