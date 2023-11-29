@@ -2,7 +2,7 @@
 Nasze wycieczki
 
 mapa:
-https://derylios.github.io/Wakacje/wycieczklot.html
+https://derylios.github.io/Wakacje/wycieczkolot.html
 
 Ściąganie pliku csv:
 https://derylios.github.io/Wakacje/wycieczki.csv
