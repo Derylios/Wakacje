@@ -1,0 +1,187 @@
+.modal {
+  z-index: 9999;
+  background: rgba(32, 184, 216,0.15); /* #20b8d8*/
+  
+}
+
+.modal-content {
+  background: #b0dfd7;
+}
+ 
+.select{
+  border: double thick black; 
+  border-radius: 15px;
+}
+
+.btn-primary{
+  font-family: 'Lato', sans-serif;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: normal;
+    font-size: 15px;
+}
+
+hr{
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 3px solid #2c03fc;
+    margin: 1em 0;
+    padding: 0;
+}
+
+.navbar { 
+    margin-top: 0; 
+    width: 100%;
+    min-height: 9vh; 
+    z-index: 10;
+    font-family: 'Lato', sans-serif;
+    font-family: 'Open Sans', sans-serif;
+} 
+
+.navbar-left{
+  margin-right: 8vh;
+}
+
+
+/*odstep miedzy przyciskami*/
+.btn-space{
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.btn-pop{
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+/* przyciski nawigacyjne mapox gl
+.mapboxgl-ctrl-group + .mapboxgl-ctrl {
+  margin-top: 10px;  
+}
+*/
+/*przycisk zoomu do wyfiltrownych punktow na panelu nawigacyjnym*/
+.mapbox-gl-zoom-to{
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: auto;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjQiPjxwYXRoIGQ9Ik00NTAtNDIwcTM4IDAgNjQtMjZ0MjYtNjRxMC0zOC0yNi02NHQtNjQtMjZxLTM4IDAtNjQgMjZ0LTI2IDY0cTAgMzggMjYgNjR0NjQgMjZabTE5MyAxNjBMNTM4LTM2NXEtMjAgMTMtNDIuNSAxOXQtNDUuNSA2cS03MSAwLTEyMC41LTQ5LjVUMjgwLTUxMHEwLTcxIDQ5LjUtMTIwLjVUNDUwLTY4MHE3MSAwIDEyMC41IDQ5LjVUNjIwLTUxMHEwIDIzLTYuNSA0NS41VDU5NC00MjJsMTA2IDEwNi01NyA1NlpNMjAwLTEyMHEtMzMgMC01Ni41LTIzLjVUMTIwLTIwMHYtMTYwaDgwdjE2MGgxNjB2ODBIMjAwWm00MDAgMHYtODBoMTYwdi0xNjBoODB2MTYwcTAgMzMtMjMuNSA1Ni41VDc2MC0xMjBINjAwWk0xMjAtNjAwdi0xNjBxMC0zMyAyMy41LTU2LjVUMjAwLTg0MGgxNjB2ODBIMjAwdjE2MGgtODBabTY0MCAwdi0xNjBINjAwdi04MGgxNjBxMzMgMCA1Ni41IDIzLjVUODQwLTc2MHYxNjBoLTgwWiIvPjwvc3ZnPg==);
+}
+/*przycisk zoomu do wszystkich punktow na panelu nawigacyjnym*/
+.mapbox-gl-restart-zoom{
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: auto;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgLTk2MCA5NjAgOTYwIiB3aWR0aD0iMjQiPjxwYXRoIGQ9Ik0xNjAtMTYwcS0zMyAwLTU2LjUtMjMuNVQ4MC0yNDB2LTQ4MHEwLTMzIDIzLjUtNTYuNVQxNjAtODAwaDY0MHEzMyAwIDU2LjUgMjMuNVQ4ODAtNzIwdjI4MGgtODB2LTIwMEgxNjB2NDAwaDMyMHY4MEgxNjBaTTc2MCAwcS03MyAwLTEyNy41LTQ1LjVUNTY0LTE2MGg2MnExMyA0NCA0OS41IDcyVDc2MC02MHE1OCAwIDk5LTQxdDQxLTk5cTAtNTgtNDEtOTl0LTk5LTQxcS0yOSAwLTU0IDEwLjVUNjYyLTMwMGg1OHY2MEg1NjB2LTE2MGg2MHY1N3EyNy0yNiA2My00MS41dDc3LTE1LjVxODMgMCAxNDEuNSA1OC41VDk2MC0yMDBxMCA4My01OC41IDE0MS41VDc2MCAwWiIvPjwvc3ZnPg==);
+}
+
+.mapboxgl-popup-close-button{
+  width: 30px; /* Increase width */
+  height: 30px; /* Increase height */
+  font-size: 30px; /* Increase font size of "X" */
+}
+/*ramka popupu*/
+.mapboxgl-popup-content {
+  box-shadow: 0 0 0 2px blue; /* Simulates a blue border */
+}
+
+
+ 
+.map-overlay {
+    position: absolute;
+    width: 30vh;
+    top: 9vh;
+    bottom: 20vh;
+    left: 0;
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    background-color: #efefef;
+    max-height: 100%;
+    overflow: hidden;
+    display:none;
+    z-index: 3;
+    border:solid thick #1fd9d4;
+    background: #bfefe7;
+}
+ 
+.map-overlay fieldset {
+    display: none;
+    background: #ddd;
+    border: none;
+    padding: 10px;
+    margin: 0;
+}
+ 
+.map-overlay input {
+    display: block;
+    border: none;
+    width: 100%;
+    border-radius: 3px;
+    padding: 10px;
+    margin: 0;
+    box-sizing: border-box;
+}
+ 
+.map-overlay .listing {
+    overflow: auto;
+    max-height: 100%;
+}
+ 
+.map-overlay .listing > * {
+    display: block;
+    padding: 5px 10px;
+    margin: 0;
+}
+ 
+.map-overlay .listing a {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    color: #404;
+    text-decoration: none;
+}
+ 
+.map-overlay .listing a:last-child {
+    border: none;
+}
+ 
+.map-overlay .listing a:hover {
+    background: #f0f0f0;
+}
+
+#map {position: absolute; 
+      top: 8vh; 
+      bottom: 0; 
+      width: 100%;
+      z-index: 1;};
+
+    h1 {
+      font-size: 20px;
+      line-height: 20px;
+      margin-bottom: 4px;
+    }
+    h2 {
+      font-size: 13px;
+      line-height: 13px;
+      margin-bottom: 2px;
+    }
+    h3 {
+      font-size: 10px;
+      line-height: 14px;
+      margin-bottom: 2px;
+    }
+    h5{
+      font-family: 'Lato', sans-serif;
+      font-family: 'Open Sans', sans-serif;
+      margin-bottom: 2px;
+      font-size: 16px;
+    }
+
+    h6{
+      font-family: 'Great Vibes', cursive !important;
+      text-align: right;
+      margin-top: 2px;
+      font-size: 20px;
+    }
+
+    h4{
+      font-family: 'Lato', sans-serif;
+    font-family: 'Open Sans', sans-serif;
+      margin-bottom: 5px;
+      font-size: 20px;
+    }
