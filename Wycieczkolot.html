@@ -1,0 +1,447 @@
+<html>
+
+<head>
+    <title>Wycieczkolot</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <!--dodaje ikone do okna przegladarki (favicon)
+    ewentualnie <link rel="icon" href="https://derylios.github.io/Wakacje/icon.svg"> -->
+    <link rel="apple-touch-icon" sizes="180x180" href="https://derylios.github.io/Wakacje/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://derylios.github.io/Wakacje/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://derylios.github.io/Wakacje/favicon/favicon-16x16.png">
+    <link rel="manifest" href="https://derylios.github.io/Wakacje/favicon/site.webmanifest">
+
+    <!--podlaczenie pliku CSS ze stylami-->
+    <link rel="stylesheet" type="text/css" href="https://derylios.github.io/Wakacje/style.css">
+
+
+    <!--biblioteka bootstrapa-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+    <!--bibliioteha jquery-->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" 
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" 
+        crossorigin="anonymous">
+    </script>
+
+    <!--biblioteki mapbox-gl-->
+    <link href='https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.min.css' rel='stylesheet'>
+    <script src='https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.js'></script>
+
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+
+    <!--biblioteki do csv-->
+    <script src='https://npmcdn.com/csv2geojson@latest/csv2geojson.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <!--fonts-->
+    <link href="https://fonts.googleapis.com/css2?family=Lato&family=Open+Sans&family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato&family=Open+Sans&family=Prata&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <!--link do svg do instrukcji-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+      <nav class="navbar navbar-expand-lg" style="background:linear-gradient(0deg, rgba(255,255,255,1) 0.5%, rgb(129, 168, 230) 10%);">
+        <div class="container-fluid">
+          <button class="navbar-left navbar-fixed-top nav-link" type="button"  data-bs-toggle="modal" data-bs-target="#Infobutton">
+          <img src="https://derylios.github.io/Wakacje/logo.svg" alt="" height="40" class="d-inline-block align-text-top"/> <!-- width="40" height="40" -->
+        </button>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <!-- Przycisk Albumy -->
+              <li role="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#lata" style="color: white;">
+                  Albumy
+              </li>
+              <!-- Przycisk punktow w zasiegu -->
+              <li role="button" class= "nav-link" id="zasiegbutton" data-toggle="buttons" style="color: white;">
+                <input type="checkbox" class="map-overlay" checked autocomplete="off" hidden>Punkty w zasięgu
+              </li>
+              <!-- Przycisk filtrow -->
+            <li id='filterResults' type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#myModal" style="color: white;">
+              Filtry
+            </li>
+            </ul>
+            <div id="geocoder" class="geocoder my-2 my-sm-0"></div> <!--Wyszukuje lokalizacje-->
+          </div>
+        </div>
+      </nav>
+        <!--dodanie mapy-->
+        <div id="map"></div>
+
+      <!-- Funkcja przycisku wstep -->
+  <div class="modal fade" id="Infobutton" aria-hidden="true" aria-labelledby="WitajLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ModalToggleLabel">WYCIECZKOLOT</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <!--modul z paskiem tekstem powitalnym-->
+        <div class="modal-body">
+          <div class="row modal-body container-fluid"> <!--zawartosc modulu-->
+            <h4><p><b>Cześć!</b> &#128512</p></h4>
+            <h4><p>Witaj w aplikacji <b>Wycieczkolot!</b> 
+                Aplikacja ta obrazuje na mapie nasze przygody w trakcie wspólnego zdobywania świata.</p>
+              <p>Poniżej znajdziesz przewodnik po aplikacji.</p>
+            </h4>
+              <h4><p>Miłej zabawy przy przeglądaniu &#x1F609</p></h4>
+            
+            <h6><p>Natalia Grabińska i Jakub Krzyżanowski</p></h6>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#Instrukcja" data-bs-toggle="modal">Instrukcja</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Zamknij</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Modul dla instrukcji-->
+  <div class="modal fade" id="Instrukcja" aria-hidden="true" aria-labelledby="InstrukcjaLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="InstrukcjaLabel">Instrukcja</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row modal-body container-fluid"> <!--zawartosc modulu-->
+            <p>Aplikacja ta pokazuje na mapie punkty, oznaczające miejsca zrobienia zdjęć. 
+              Po kliknięciu w taki punkt wyświetla się chmurka ze zdjęciem oraz "nazwa" wycieczki na której zrobiono zdjęcie wraz z datą wykonania.
+              Poniżej zdjęcia znajduje się przycisk "Link", po wciśniciu którego wyświetla się w sąsiedniej karcie przeglądarki zdjęcie w pełnym rozmiarze
+            </p>
+            <hr>
+            <p>Aby przyjemniej się korzystało z aplikacji pojedyńcze, znajdujące się blisko siebie punkty są grupowane w większe punkty (clustry), 
+              zwierające informacje ile punktów znaduje się w tej okolicy. Po kliknięciu w cluster mapa przybliża się, 
+              pokazując mniejsze grupki punktów.
+            </p>
+            <hr>
+            <p>Sterować aplikacją możemy za pomocą dwoch paneli, głównym Menu znajdującym sie na górze, obok logo aplikacji 
+              oraz za pomocą panelu nawigacyjnego, znajdującego się w prawym, górnym rogu mapy. Oba te panele zostały omówione w kolejnych krokach.
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#InstrukcjaMenu" data-bs-toggle="modal">Panel Menu</button>
+          <button class="btn btn-primary" data-bs-target="#InstrukcjaNawigacja" data-bs-toggle="modal">Panel Nawigacyny</button>
+          <button class="btn btn-primary" data-bs-target="#Infobutton" data-bs-toggle="modal">Wstecz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!--Modul dla instrukcji Menu-->
+  <div class="modal fade" id="InstrukcjaMenu" aria-hidden="true" aria-labelledby="InstrukcjaMenuLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header"> <!--tytul modulu-->
+          <h1 class="modal-title fs-5" id="InstrukcjaMenuLabel">Menu główne - instrukcja</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p>Główne Menu znajduje sie na górze ekanu. Na telefonach oraz małych ekranach będzie się rozwijało po wciśnięciu przycisku obok logo.
+              Znajduje się na nim wyszukiwarka, w której można wyszukać miejsce po adresie. 
+              W Menu znajduja się również przyciski uruchamiające inne funkcje:
+            </p>
+            <hr>
+            <h5><center>Albumy</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Przycisk "Albumy" uruchamia panel z katalogami zdjęć z wycieczek. Jest on podzielony na kilka okienek. 
+                W pierwszym okienku znajdują się foldery z latami. Po kliknięciu w dany rok otwiera się drugie okienko,
+                w którym znajdują się wycieczki z tego roku. 
+                Kliknięcie w nazwe danej wycieczki, przenosi nas do katalogamu ze zdjęciami z teg wycieczki na dysku Google, 
+                na kolejnej karcie przeglądarki.
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <li role="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#lata" style="color: rgb(0, 0, 0);">
+                  Albumy
+              </li>
+              <!--Przykład:
+              div class="col-md-4 d-flex align-items-center"> 
+                <button type="button" class="btn btn-secondary">Your Button</button>
+              </div>-->
+              </div>
+            </div>
+            <hr>
+            <h5><center>Punkty w zasięgu</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Przycisk "Punkty w zasięgu" uruchamia z lewej strony ekranu panel, na którym wyświetlana jest lista widocznych pojedyńczych
+                punktów na mapie. Klkniecie w konkertną pozycję na liście otwiera zdjęcie na kolejnej karcie przeglądarki
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <li role="button" class= "nav-link" id="zasiegbutton" data-toggle="buttons" style="color: rgb(0, 0, 0);">
+                  <input type="checkbox" class="map-overlay" checked autocomplete="off" hidden>Punkty w zasięgu
+                </li>
+              </div>
+            </div>
+            <hr>
+            <h5><center>Filtry</center></h5>
+            <p> </p>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Przycisk "Filtry" uruchamia panel w którym możemy selekcjonować wyświetlane na mapie punkty ze względu na nazwę wycieczki oraz rok wycieczki. 
+                Na dole panelu znajdują się trzy przyciski. Środkowy "Wyczyść filtry", przywraca początowe ustawienia, 
+                natomiast dwa pozostałe odpowiadają za widok mapy. Przycisk "Przybliż widok" przybliża do wybranych punktów, 
+                natomiast "Przywróć widok" oddala mapę do zasęgu wszytkich punktów.
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <li id='filterResults' type="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#myModal" style="color: rgb(0, 0, 0);">
+                  Filtry
+                </li>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#InstrukcjaNawigacja" data-bs-toggle="modal">Panel Nawigacyny - instrukcja</button>
+          <button class="btn btn-primary" data-bs-target="#Instrukcja" data-bs-toggle="modal">Wstecz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <!--Modul dla instrukcji panelu nawigacyjnego-->
+  <div class="modal fade" id="InstrukcjaNawigacja" aria-hidden="true" aria-labelledby="InstrukcjaNawigacjaLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header"> <!--tytul modulu-->
+          <h1 class="modal-title fs-5" id="InstrukcjaNawigacjaLabel">Panel nawigacyjny</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p>Penel nawigacyjny znajduje się w prawym, górnym rogu mapy. Narzędzia te służą do sterowania mapą.
+            </p>
+            <hr>
+            <h5><center>Kontrola mapy</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Dzięki tym narzędziom możemy przybliżać i oddalać mapę. Przytrzymując przycisk kompasu możemy obracać mapą, 
+                a po wciśnięciu go mapa powraca do początkowej orientacji. 
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <button class="nav-link" type="button">
+                  <img src="https://derylios.github.io/Wakacje/instrukcja/navi.svg" alt="" height="90" class="d-inline-block align-text-top"/>
+                </button>
+              </div>
+            </div>
+            <hr>
+            <h5><center>Pełny ekran</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Przycisk ten rozszerza mapę na cały ekran.
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <button class="nav-link" type="button">
+                  <span class="material-symbols-outlined" style="font-size:60px">zoom_out_map</span>
+                </button>
+              </div>
+            </div>
+            <hr>
+            <h5><center>Przybliż do zaznaczonych</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Ten przycisk przybliża do wybranych punktów wcześniej w filtrach (funkcja dostepna w Menu). 
+                Działa tylko jeśli filtry są aktywne.  
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <button class="nav-link" type="button">
+                  <span class="material-symbols-outlined" style="font-size:60px">frame_inspect</span>
+                </button>
+              </div>
+            </div>
+            <hr>
+            <h5><center>Przybliż do wszystkich</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Ten przycisk przybliża mapę do wszystkich punktów, również tych niewybranych w filtrach.
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <button class="nav-link" type="button">
+                  <span class="material-symbols-outlined" style="font-size:60px">reopen_window</span>
+                </button>
+              </div>
+            </div>
+            <hr>
+            <h5><center>Lokalizacja</center></h5>
+            <div class="row">
+              <!-- Text column -->
+              <div class="col-md-9" style="word-wrap: break-word;"> <!-- Adjust 'md-8' to set the text width -->
+                Przycisk uruchamia funkcję lokalizującą użykownika.
+              </div>
+              <!-- Button column -->
+              <div class="col-md-3 d-flex align-items-center"> <!-- Adjust 'md-4' as necessary -->
+                <button class="nav-link" type="button">
+                  <span class="material-symbols-outlined" style="font-size:60px">my_location</span>
+                </button>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#InstrukcjaMenu" data-bs-toggle="modal">Panel Menu</button>
+          <button class="btn btn-primary" data-bs-target="#Instrukcja" data-bs-toggle="modal">Wstecz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Modul z filtrami  -->
+    <div class="modal fade" id="myModal"  aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+           <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel"><b>FILTRY</b></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+           </div>
+          <div class="modal-body flex-parent flex-parent--center-main">
+            <form id="filters"></form>
+          </div>
+            <div class="modal-footer flex-parent flex-parent--center-main">
+                <button id="zoomToAllButton" class="btn">Przwróć widok</button>
+                <button id="removeFilters" class="btn">Wyczyść filtry</button>
+                <button id="zoomToButton" class="btn">Przybliż widok</button>
+            </div>
+        </div>    
+      </div>
+    </div>
+
+      <!--Modul z punktami w zasiegu mapy-->
+      <div class="map-overlay">
+        <fieldset>
+          <input
+            id="feature-filter"
+            type="text"
+            placeholder="Szukaj"
+          />
+        </fieldset>
+        <div id="feature-listing" class="listing"></div>`
+      </div>
+
+
+  <!-- Funkcja przycisku Album -->
+  <div class="modal fade" id="lata" aria-hidden="true" aria-labelledby="lataLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ModalToggleLabel">WYCIECZKI</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <!--modul z latami-->
+        <div class="modal-body">
+          <div class="row modal-body container-fluid"> <!--zawartosc modulu-->
+            <button class="btn btn-primary col-sm-3 btn-space" data-bs-target="#ModalToggle2021" data-bs-toggle="modal">2021</button>
+            <button class="btn btn-primary col-sm-3 btn-space" data-bs-target="#ModalToggle2022" data-bs-toggle="modal">2022</button>
+            <button class="btn btn-primary col-sm-3 btn-space" data-bs-target="#ModalToggle2023" data-bs-toggle="modal">2023</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Modul dla roku 2021-->
+  <div class="modal fade" id="ModalToggle2021" aria-hidden="true" aria-labelledby="ModalToggleLabel2021" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ModalToggleLabel2021">2021</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row modal-body container-fluid"> <!--zawartosc modulu-->
+            <a href="https://drive.google.com/drive/folders/1GtXJm-YMQoxz4gyahkLVHWqXruV6k2wo?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">SOLINA</a>
+            <a href="https://drive.google.com/drive/folders/1Ls2l537kuM0YDWEtVWJFvSkZZaMRjnBy?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">KRAKÓW</a>
+            <a href="https://drive.google.com/drive/folders/1uDvI4Vwad-sc0F7QLi_FszTIKCSlJIZI?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">WROCŁAW</a>
+            <a href="https://drive.google.com/drive/folders/1o3Jke4wTcLEio-fToR34gI9rMWF-Ofi4?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">PRAGA</a>
+            <a href="https://drive.google.com/drive/folders/1YXGrV_AYRWjgHChzJayGj1WIaJfx8JCg?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">KRETA</a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#lata" data-bs-toggle="modal">Wstecz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Modul dla roku 2022-->
+  <div class="modal fade" id="ModalToggle2022" aria-hidden="true" aria-labelledby="ModalToggleLabel2022" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ModalToggleLabel2022">2022</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row modal-body container-fluid"> <!--zawartosc modulu-->
+            <a href="https://drive.google.com/drive/folders/1GtXJm-YMQoxz4gyahkLVHWqXruV6k2wo?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">SOLINA</a>
+            <a href="https://drive.google.com/drive/folders/1Ls2l537kuM0YDWEtVWJFvSkZZaMRjnBy?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">KRAKÓW</a>
+            <a href="https://drive.google.com/drive/folders/1uDvI4Vwad-sc0F7QLi_FszTIKCSlJIZI?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">WROCŁAW</a>
+            <a href="https://drive.google.com/drive/folders/1o3Jke4wTcLEio-fToR34gI9rMWF-Ofi4?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">PRAGA</a>
+            <a href="https://drive.google.com/drive/folders/1YXGrV_AYRWjgHChzJayGj1WIaJfx8JCg?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">KRETA</a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#lata" data-bs-toggle="modal">Wstecz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Modul dla roku 2023-->
+  <div class="modal fade" id="ModalToggle2023" aria-hidden="true" aria-labelledby="ModalToggleLabel2023" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ModalToggleLabel2021">2023</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row modal-body container-fluid"> <!--zawartosc modulu-->
+            <a href="https://drive.google.com/drive/folders/1GtXJm-YMQoxz4gyahkLVHWqXruV6k2wo?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">SOLINA</a>
+            <a href="https://drive.google.com/drive/folders/1Ls2l537kuM0YDWEtVWJFvSkZZaMRjnBy?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">KRAKÓW</a>
+            <a href="https://drive.google.com/drive/folders/1uDvI4Vwad-sc0F7QLi_FszTIKCSlJIZI?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">WROCŁAW</a>
+            <a href="https://drive.google.com/drive/folders/1o3Jke4wTcLEio-fToR34gI9rMWF-Ofi4?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">PRAGA</a>
+            <a href="https://drive.google.com/drive/folders/1YXGrV_AYRWjgHChzJayGj1WIaJfx8JCg?usp=share_link" target="_blank" role="button" class="btn btn-primary col-sm-3  btn-space">KRETA</a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#lata" data-bs-toggle="modal">Wstecz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script src="https://derylios.github.io/Wakacje/app.js"></script>
+</html>
