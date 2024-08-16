@@ -29,6 +29,7 @@ const config = {
       listItems: [ //tu dadac lata
         '2020',
         '2021',
+        '2023'
       ],
     },
 
