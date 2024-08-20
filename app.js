@@ -38,7 +38,7 @@ const config = {
       type: 'checkbox',
       title: 'Wycieczki: ',
       columnHeader: 'nazwa', // nazwa kolumny w CSV 
-      listItems: ['Na codzien', 'Krakow', 'Solina', 'Praga'],//dodać nazwy wycieczki
+      listItems: ['Na codzien', 'Krakow', 'Solina', 'Praga', 'Wroclaw'],//dodać nazwy wycieczki
     }, // ListItems - Case sensitive - must match spreadsheet entry; This will take up to six inputs but is best used with a maximum of three;
   ],
   
